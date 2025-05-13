@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:zameel/core/theme/app_colors.dart';
+import 'package:zameel/core/theme/app_fonts.dart';
+
+class CustomTextField extends StatefulWidget {
+  final String hintText;
+  final bool isPassword;
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
+
+  const CustomTextField({
+    super.key,
+    required this.hintText,
+    required this.isPassword,
+    required this.controller,
+    this.validator,
+  });
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool showPassword = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.controller,
+      obscureText: widget.isPassword && !showPassword,
+      validator: widget.validator,
+      style: TextStyle(
+        fontFamily: AppFonts.mainFontName,
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: Theme.of(context).colorScheme.onPrimary,
+      ),
+      decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ) ,
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ) ,
+         
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+          ),
+        ) , 
+        errorStyle: TextStyle(
+          fontFamily: AppFonts.mainFontName,
+          fontSize: 11,
+          fontWeight: FontWeight.w400,
+          color: Theme.of(context).colorScheme.error,
+        ) , 
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        hintText: widget.hintText,
+        hintStyle: Theme.of(context).textTheme.displayMedium,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        
+        suffixIcon:
+            widget.isPassword
+                ? IconButton(
+                  icon: Icon(
+                    showPassword ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.primaryColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      showPassword = !showPassword;
+                    });
+                  },
+                )
+                : null,
+      ),
+    );
+  }
+}

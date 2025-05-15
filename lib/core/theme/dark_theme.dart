@@ -32,6 +32,12 @@ ThemeData darkTheme = ThemeData(
       fontFamily: AppFonts.mainFontName,
       color: AppColors.primaryColor,
     ),
+      bodySmall: TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      fontFamily: AppFonts.mainFontName,
+      color: AppColors.textColorLightModeSecondary,
+    ) ,
   ),
    elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(

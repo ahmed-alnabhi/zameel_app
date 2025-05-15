@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
+import 'package:zameel/screens/authentication/sign_up.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -36,7 +37,6 @@ class _LoginPageState extends State<LoginPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      _submitForm();
       _emailController.clear();
       _passwordController.clear();
     }
@@ -86,7 +86,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       SizedBox(height: 10.h),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+                        },
                         child: Text(
                           "بإنشاء حساب جديد",
                           style: Theme.of(context).textTheme.displaySmall,
@@ -128,7 +130,11 @@ class _LoginPageState extends State<LoginPage> {
 
                       SizedBox(
                         width: double.infinity,
-                        child: CustomButton(text: "تسجيل الدخول", onPressed: _submitForm  , isEnabled: isButtonEnabled,),
+                        child: CustomButton(
+                          text: "تسجيل الدخول",
+                          onPressed: _submitForm,
+                          isEnabled: isButtonEnabled,
+                        ),
                       ),
                       SizedBox(height: 30.h),
 

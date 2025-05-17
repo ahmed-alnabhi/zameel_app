@@ -41,7 +41,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (_formKey.currentState!.validate()) {
       _passwordController.clear();
       _confirmPasswordController.clear();
-      Navigator.push(context, MaterialPageRoute(builder: (context) =>  LoginScreen()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
     }
   }
 
@@ -65,7 +68,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                    SizedBox(height: 20,) ,
+                  SizedBox(height: 20),
                   customArrowBack(context),
                   SizedBox(height: 15.h),
                   Padding(
@@ -73,7 +76,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: Column(
                       children: [
                         SizedBox(height: 90.h),
-          
+
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.r),
@@ -109,8 +112,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             if (value == null || value.isEmpty) {
                               return "الرجاء إدخال كلمة المرور";
                             }
-                            if (value.length < 6) {
-                              return "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+                            if (value.length < 8) {
+                              return "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+                            }
+                            if (!RegExp(r'[0-9]').hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على رقم واحد على الأقل";
+                            }
+                            if (!RegExp(
+                              r'[!@#$%^&*(),.?":{}|<>]',
+                            ).hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على رمز واحد على الأقل";
+                            }
+                            if (!RegExp(
+                              r'(?=.*[a-z])(?=.*[A-Z])',
+                            ).hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على حرف صغير وحرف كبير على الأقل";
                             }
                             return null;
                           },
@@ -122,10 +138,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           controller: _confirmPasswordController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "الرجاء إدخال كلمة المرور";
-                            }
-                            if (value.length < 6) {
-                              return "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+                              return "الرجاء إدخال تأكيد كلمة المرور";
                             }
                             if (value != _passwordController.text) {
                               return "كلمة المرور غير متطابقة";
@@ -133,6 +146,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             return null;
                           },
                         ),
+
                         SizedBox(height: 24.h),
                         CustomButton(
                           text: "اعادة تعيين كلمة المرور",

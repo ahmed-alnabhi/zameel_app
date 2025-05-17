@@ -10,6 +10,7 @@ ThemeData darkTheme = ThemeData(
     onPrimary: AppColors.textColorDarkModePrimary,
     onSecondary: AppColors.textColorDarkModeSecondary,
     onSecondaryContainer: AppColors.textColorLightModePrimary,
+      onTertiaryContainer: AppColors.textColorLightModePrimary,
     onSurface: Colors.white,
   ),
   scaffoldBackgroundColor: AppColors.backgroundColorDark,
@@ -31,6 +32,12 @@ ThemeData darkTheme = ThemeData(
       fontWeight: FontWeight.w400,
       fontFamily: AppFonts.mainFontName,
       color: AppColors.primaryColor,
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+      fontFamily: AppFonts.mainFontName,
+      color: AppColors.textColorDarkModePrimary,
     ),
       bodySmall: TextStyle(
       fontSize: 12,

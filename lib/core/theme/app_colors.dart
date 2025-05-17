@@ -14,4 +14,5 @@ class AppColors {
   static const Color textColorDarkModePrimary = Color(0xFFF0F2F5);
   static const Color textColorDarkModeSecondary = Color(0xFF7A869A);
   static const Color textButtonColor = Color(0xFFEDEDED);
+  static const Color containerColor = Color(0xFFD6DFFF);
 }

@@ -10,6 +10,7 @@ ThemeData lightTheme = ThemeData(
     onPrimary: AppColors.textColorLightModePrimary,
     onSecondary: AppColors.textColorLightModeSecondary,
     onSecondaryContainer: AppColors.primaryLightColor,
+    onTertiaryContainer: AppColors.containerColor,
     onSurface: Colors.white,
   ),
   scaffoldBackgroundColor: AppColors.backgroundColor,
@@ -32,6 +33,12 @@ ThemeData lightTheme = ThemeData(
       fontFamily: AppFonts.mainFontName,
       color: AppColors.primaryColor,
     ),
+        bodyMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+      fontFamily: AppFonts.mainFontName,
+      color: AppColors.textColorLightModePrimary,
+    ) ,
     bodySmall: TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w400,
@@ -39,7 +46,7 @@ ThemeData lightTheme = ThemeData(
       color: AppColors.textColorLightModeSecondary,
     ) ,
     
-  ),
+  ),              
    elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       disabledBackgroundColor: AppColors.primary50opacityColor,

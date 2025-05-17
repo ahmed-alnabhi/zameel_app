@@ -6,6 +6,7 @@ import 'package:zameel/core/theme/app_fonts.dart';
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
+  // Color? backgroundColor;
   final bool isEnabled;
 
   const CustomButton({
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
+      height: 64,
       child: ElevatedButton(
         onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(

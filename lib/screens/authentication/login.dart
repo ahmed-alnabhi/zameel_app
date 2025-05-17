@@ -4,16 +4,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
+import 'package:zameel/screens/authentication/password_recovery/password_recovery_screen.dart';
 import 'package:zameel/screens/authentication/sign_up.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -44,6 +45,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _emailController.removeListener(_updateButtonState);
+    _passwordController.removeListener(_updateButtonState);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -87,7 +90,12 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 10.h),
                       InkWell(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpPage(),
+                            ),
+                          );
                         },
                         child: Text(
                           "بإنشاء حساب جديد",
@@ -110,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 10.h),
 
                       CustomTextField(
                         hintText: "كلمة المرور",
@@ -126,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 30.h),
+                      SizedBox(height: 24.h),
 
                       SizedBox(
                         width: double.infinity,
@@ -139,7 +147,14 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 30.h),
 
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PasswordRecoveryScreen(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "هل نسيت كلمة المرور؟",
                           style: Theme.of(context).textTheme.displaySmall,

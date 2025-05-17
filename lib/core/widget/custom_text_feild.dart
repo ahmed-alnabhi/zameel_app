@@ -27,7 +27,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      
+      cursorColor: AppColors.primaryColor,
       controller: widget.controller,
       obscureText: widget.isPassword && !showPassword,
       validator: widget.validator,
@@ -38,11 +38,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         color: Theme.of(context).colorScheme.onPrimary,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 19),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
+            color: AppColors.primaryColor,
           ),
         ) ,
         errorBorder: OutlineInputBorder(

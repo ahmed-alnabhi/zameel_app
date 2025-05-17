@@ -13,6 +13,7 @@ ThemeData darkTheme = ThemeData(
       onTertiaryContainer: AppColors.textColorLightModePrimary,
     onSurface: Colors.white,
   ),
+  
   scaffoldBackgroundColor: AppColors.backgroundColorDark,
   textTheme: TextTheme(
     displayLarge: TextStyle(

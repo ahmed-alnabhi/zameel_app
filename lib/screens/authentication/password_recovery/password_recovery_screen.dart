@@ -57,55 +57,58 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: 20,) ,
+                  SizedBox(height: 20.h,) ,
                   customArrowBack(context) ,
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30.w),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 100.h),
-                        SvgPicture.asset(
-                          "assets/images/logo.svg",
-                          height: 100,
-                          width: 200,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.primaryColor,
-                            BlendMode.srcIn,
+                  ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 735),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30.w),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 100.h),
+                          SvgPicture.asset(
+                            "assets/images/logo.svg",
+                            height: 100,
+                            width: 200,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.primaryColor,
+                              BlendMode.srcIn,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 60.h),
-                        Text(
-                          "أهلا وسهلاً",
-                          style: Theme.of(context).textTheme.displayLarge,
-                        ),
-                        SizedBox(height: 40.h),
-                        Text(
-                          "قم بادخال بريدك الألكتروني لإستعادة كلمة المرور",
-                          style: Theme.of(context).textTheme.displayMedium,
-                        ),
-                        SizedBox(height: 20.h),
-                        CustomTextField(
-                          hintText: "البريد الألكتروني",
-                          isPassword: false,
-                          controller: _emailController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "البريد الألكتروني مطلوب";
-                            }
-                            if (!value.contains("@")) {
-                              return "البريد الألكتروني غير صحيح";
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 16.h),
-                        CustomButton(
-                          text: "استعادة كلمة المرور",
-                          onPressed: _submitForm,
-                          isEnabled: isButtonEnabled,
-                        ),
-                       
-                      ],
+                          SizedBox(height: 60.h),
+                          Text(
+                            "أهلا وسهلاً",
+                            style: Theme.of(context).textTheme.displayLarge,
+                          ),
+                          SizedBox(height: 40.h),
+                          Text(
+                            "قم بادخال بريدك الألكتروني لإستعادة كلمة المرور",
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
+                          SizedBox(height: 20.h),
+                          CustomTextField(
+                            hintText: "البريد الألكتروني",
+                            isPassword: false,
+                            controller: _emailController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "البريد الألكتروني مطلوب";
+                              }
+                              if (!value.contains("@")) {
+                                return "البريد الألكتروني غير صحيح";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.h),
+                          CustomButton(
+                            text: "استعادة كلمة المرور",
+                            onPressed: _submitForm,
+                            isEnabled: isButtonEnabled,
+                          ),
+                         
+                        ],
+                      ),
                     ),
                   ),
                 ],

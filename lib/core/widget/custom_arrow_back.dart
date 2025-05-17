@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Widget customArrowBack(BuildContext context) {
     return Padding(
-      padding:  EdgeInsets.symmetric(horizontal: 30.w) ,
+      padding:  EdgeInsets.symmetric(horizontal: 15.w) ,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

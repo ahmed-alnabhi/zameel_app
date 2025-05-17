@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 768),
+              constraints: const BoxConstraints(maxWidth: 735),
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 30.w),
                 child: Form(

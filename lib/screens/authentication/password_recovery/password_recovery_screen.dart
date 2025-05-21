@@ -5,7 +5,7 @@ import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/screens/authentication/password_recovery/otp_verification.dart';
+import 'package:zameel/screens/authentication/otp_verification.dart';
 
 class PasswordRecoveryScreen extends StatefulWidget {
   const PasswordRecoveryScreen({super.key});

@@ -6,6 +6,7 @@ import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
+import 'package:zameel/screens/authentication/otp_verification.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -62,10 +63,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      _nameController.clear();
-      _emailController.clear();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
+      Navigator.push(context, MaterialPageRoute(builder:  (context) {
+        return OtpVerificationScreen(email: _emailController.text.trim(),);
+      }));
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/theme/dark_theme.dart';
 import 'package:zameel/core/theme/light_theme.dart';
-import 'package:zameel/screens/authentication/login.dart';
+import 'package:zameel/screens/authentication/login_screen.dart';
 
 void main() {
   runApp(const MyApp());

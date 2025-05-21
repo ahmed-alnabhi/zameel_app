@@ -5,7 +5,7 @@ import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
 import 'package:zameel/screens/authentication/password_recovery/password_recovery_screen.dart';
-import 'package:zameel/screens/authentication/sign_up.dart';
+import 'package:zameel/screens/authentication/sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

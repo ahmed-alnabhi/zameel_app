@@ -34,7 +34,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
      
-  Navigator.push(context, MaterialPageRoute(builder: (context) =>  OtpVerificationScreen(email: _emailController.text,)));
+  Navigator.push(context, MaterialPageRoute(builder: (context) =>  OtpVerificationScreen(email: _emailController.text, token: "",)));
     
     }
   }

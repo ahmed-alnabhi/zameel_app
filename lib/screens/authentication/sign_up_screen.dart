@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:msh_checkbox/msh_checkbox.dart';
+import 'package:zameel/core/networking/register.dart';
+import 'package:zameel/core/networking/send_otp.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
@@ -24,7 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
       TextEditingController();
   bool isChecked = false;
   bool isDisabled = false;
-
+  bool isLoading = false;
   bool isButtonEnabled = false;
 
   @override
@@ -53,7 +55,6 @@ class _SignUpPageState extends State<SignUpPage> {
     _passwordController.removeListener(_updateButtonState);
     _confirmPasswordController.removeListener(_updateButtonState);
     _nameController.removeListener(_updateButtonState);
-
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -61,11 +62,62 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.push(context, MaterialPageRoute(builder:  (context) {
-        return OtpVerificationScreen(email: _emailController.text.trim(),);
-      }));
+  Future<void> _handleRegister() async {
+    setState(() {
+      isDisabled = true;
+      isLoading = true;
+    });
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return Center(
+          child: CircularProgressIndicator(color: AppColors.primaryColor),
+        );
+      },
+    );
+
+    final result = await registerUser(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+      deviceName: "Android", // أو iOS أو اسم الجهاز الفعلي
+    );
+    if (result['success']) {
+      String accessToken = result['token'];
+      final resultEmailRequest = await sendEmailNotification(accessToken);
+      if (resultEmailRequest['success']) {
+          if (!mounted) return;
+        Navigator.pop(context);
+        setState(() {
+          isDisabled = false;
+          isLoading = false;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => OtpVerificationScreen(
+                  email: _emailController.text.trim(),
+                  token: accessToken,
+                ),
+          ),
+        );
+      }
+    } else {
+        if (!mounted) return;
+      Navigator.pop(context);
+      setState(() {
+        isDisabled = false;
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'], style: TextStyle(fontSize: 14)),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -257,10 +309,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 16.h),
                           CustomButton(
-                            text: "انشاء حساب",
-                            isEnabled: isButtonEnabled,
+                            text: isLoading ? "جاري الانشاء..." : "انشاء حساب",
+                            isEnabled: isLoading ? false : isButtonEnabled,
                             onPressed: () {
-                              _submitForm();
+                              if (_formKey.currentState!.validate()) {
+                                _handleRegister();
+                              }
                             },
                           ),
                         ],

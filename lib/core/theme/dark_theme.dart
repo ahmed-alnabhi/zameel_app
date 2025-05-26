@@ -5,7 +5,7 @@ import 'package:zameel/core/theme/app_fonts.dart';
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.dark(
-    primary: AppColors.primaryColorDark,
+    primary: AppColors.primaryColor,
     secondary: AppColors.secondaryColorDark,
     onPrimary: AppColors.textColorDarkModePrimary,
     onSecondary: AppColors.textColorDarkModeSecondary,

@@ -31,6 +31,12 @@ Future<Map<String, dynamic>> verifyEmail(String token, String otp) async {
       };
     }
   } on DioException catch (e) {
+    if( e.response?.statusCode == 400){
+      return {
+      'success': false,
+      'message': 'خطأ في رمز التحقق',
+    };
+    } 
     return {
       'success': false,
       'message': e.response?.data['message'] ?? 'خطأ في الاتصال',

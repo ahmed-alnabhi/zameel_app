@@ -1,1 +1,1 @@
-String baseUrl = 'https://api.zameel.mahmoudahmed.me/api'; 
+String baseUrl = 'https://api.zameel.app/api'; 

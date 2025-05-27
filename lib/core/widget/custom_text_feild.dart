@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
 
@@ -72,11 +73,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
         suffixIcon:
             widget.isPassword
-                ? IconButton(
-                  icon: Icon(
-                    showPassword ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.primaryColor,
-                  ),
+                ?   IconButton(
+                  icon: showPassword? Icon(LucideIcons.eye , color: Theme.of(context).colorScheme.primary,size: 24): Icon(LucideIcons.eyeOff,  color: Theme.of(context).colorScheme.primary, size: 24,),
                   onPressed: () {
                     setState(() {
                       showPassword = !showPassword;

@@ -1,10 +1,8 @@
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zameel/core/functions/get_device_name.dart';
 import 'package:zameel/core/networking/login_service.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_button.dart';
@@ -66,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     } else {
+     
       if (!mounted) return;
      customSnackBar(context, loginResult['message'] , Theme.of(context).colorScheme.error);
     }
@@ -196,6 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: 20.h),
+                      
                     ],
                   ),
                 ),
@@ -207,17 +207,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<String> getDeviceName() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      return '${androidInfo.manufacturer} ${androidInfo.model}';
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.name ?? 'Unknown iOS Device';
-    } else {
-      return 'Unknown Platform';
-    }
-  }
 }

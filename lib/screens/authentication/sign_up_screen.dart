@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:msh_checkbox/msh_checkbox.dart';
+import 'package:zameel/core/functions/get_device_name.dart';
 import 'package:zameel/core/networking/register.dart';
 import 'package:zameel/core/networking/send_otp.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
 import 'package:zameel/screens/authentication/otp_verification.dart';
 
@@ -63,33 +65,25 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _handleRegister() async {
+     String deviceName = await getDeviceName();
     setState(() {
       isDisabled = true;
       isLoading = true;
     });
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return Center(
-          child: CircularProgressIndicator(color: AppColors.primaryColor),
-        );
-      },
-    );
+    
 
     final result = await registerUser(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
       confirmPassword: _confirmPasswordController.text,
-      deviceName: "Android", // أو iOS أو اسم الجهاز الفعلي
+      deviceName: deviceName,
     );
     if (result['success']) {
       String accessToken = result['token'];
       final resultEmailRequest = await sendEmailNotification(accessToken);
       if (resultEmailRequest['success']) {
-          if (!mounted) return;
-        Navigator.pop(context);
+        if (!mounted) return;
         setState(() {
           isDisabled = false;
           isLoading = false;
@@ -106,18 +100,13 @@ class _SignUpPageState extends State<SignUpPage> {
         );
       }
     } else {
-        if (!mounted) return;
-      Navigator.pop(context);
+      if (!mounted) return;
       setState(() {
         isDisabled = false;
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'], style: TextStyle(fontSize: 14)),
-          backgroundColor: Colors.red,
-        ),
-      );
+       
+       customSnackBar(context,result['message'], Theme.of(context).colorScheme.error);
     }
   }
 
@@ -180,6 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 20.h),
                           CustomTextField(
+                            isEnabled: isLoading ? false : true,
                             hintText: "الاسم الرباعي",
                             isPassword: false,
                             controller: _nameController,
@@ -202,6 +192,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 16.h),
                           CustomTextField(
+                            isEnabled: isLoading ? false : true,
                             hintText: "البريد الالكتروني",
                             isPassword: false,
                             controller: _emailController,
@@ -217,6 +208,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 16.h),
                           CustomTextField(
+                            isEnabled: isLoading ? false : true,
                             hintText: "كلمة المرور",
                             isPassword: true,
                             controller: _passwordController,
@@ -245,6 +237,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 16.h),
                           CustomTextField(
+                            isEnabled: isLoading ? false : true,
                             hintText: "تأكيد كلمة المرور",
                             isPassword: true,
                             controller: _confirmPasswordController,
@@ -309,7 +302,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           SizedBox(height: 16.h),
                           CustomButton(
-                            text: isLoading ? "جاري الانشاء..." : "انشاء حساب",
+                            isLoading: isLoading,
+                            text: "انشاء حساب",
                             isEnabled: isLoading ? false : isButtonEnabled,
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {

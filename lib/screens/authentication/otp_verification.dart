@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:zameel/core/networking/send_otp.dart';
 import 'package:zameel/core/networking/verify_otp.dart';
 import 'package:zameel/core/theme/app_colors.dart';
@@ -9,6 +9,7 @@ import 'package:zameel/core/theme/app_fonts.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/screens/authentication/login_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -26,12 +27,13 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
-  String otp = '0000';
-  bool isvalid = false;
-  bool isUnvalid = false;
-  bool isButtonEnabled = false;
-  int _secondsRemaining = 120;
-  bool _isSecondButtonDisabled = true;
+  bool _isLoading = false;
+  bool _isResendLoading = false;
+  bool _isvalid = false;
+  bool _isUnvalid = false;
+  bool _isButtonEnabled = false;
+  int _secondsRemaining = 60;
+  bool _isSecondButtonenabled = false;
   late Timer _timer;
 
   @override
@@ -44,7 +46,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_secondsRemaining == 0) {
         setState(() {
-          _isSecondButtonDisabled = false;
+          _isSecondButtonenabled = true;
           _timer.cancel();
         });
       } else {
@@ -56,89 +58,75 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   Future<void> verifyOtp() async {
-    showDialog(
-      requestFocus: true,
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return Center(
-          child: CircularProgressIndicator(color: AppColors.primaryColor),
-        );
-      },
-    );
-    final resultOfVerifyEmail = await verifyEmail(
-      widget.token,
-      _otpController.text.trim(),
-    );
-    if (resultOfVerifyEmail['success']) {
+    if (_otpController.text.length == 4) {
       setState(() {
-        isvalid = true;
-        isUnvalid = false;
+        _isLoading = true;
+        _isButtonEnabled = false;
       });
-      if (!mounted) return;
-      Navigator.pop(context);
-      Future.delayed(const Duration(milliseconds: 400), () {
-        if (!mounted) return;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
-      });
-    } else {
-      if (!mounted) return;
-      Navigator.pop(context);
-      setState(() {
-        isvalid = false;
-        isUnvalid = true;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invalid OTP', style: TextStyle(fontSize: 14)),
-          backgroundColor: Colors.red,
-        ),
+      final resultOfVerifyEmail = await verifyEmail(
+        widget.token,
+        _otpController.text.trim(),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (resultOfVerifyEmail['success']) {
+        setState(() {
+          _isvalid = true;
+          _isUnvalid = false;
+        });
+        if (!mounted) return;
+        Future.delayed(const Duration(milliseconds: 400), () {
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        });
+      } else {
+        if (!mounted) return;
+        setState(() {
+          _isvalid = false;
+          _isUnvalid = true;
+        });
+        customSnackBar(
+          context,
+          resultOfVerifyEmail['message'],
+          Theme.of(context).colorScheme.error,
+        );
+      }
     }
   }
 
   Future<void> resendOtp() async {
     setState(() {
-      _secondsRemaining = 120;
-      _isSecondButtonDisabled = true;
+      _isResendLoading = true;
     });
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return Center(
-          child: CircularProgressIndicator(color: AppColors.primaryColor),
-        );
-      },
-    );
+
     final resultOfResendOtp = await sendEmailNotification(widget.token);
+
+    setState(() {
+      _isResendLoading = false;
+    });
+
     if (resultOfResendOtp['success']) {
+      setState(() {
+        _secondsRemaining = 60;
+        _isSecondButtonenabled = false;
+      });
+      _startTimer();
       if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'تم الارسال مجدداً بنجاح',
-            style: TextStyle(fontSize: 12),
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
+      customSnackBar(context, "تم الارسال بنجاح", Colors.green);
     } else {
       if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('حدث خطأ ما', style: TextStyle(fontSize: 12)),
-          backgroundColor: Colors.red,
-        ),
+      customSnackBar(
+        context,
+        resultOfResendOtp['message'],
+        Theme.of(context).colorScheme.error,
       );
     }
-
-    _startTimer();
   }
 
   @override
@@ -158,7 +146,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               children: [
                 SizedBox(height: 30.h),
                 customArrowBack(context),
-
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 735),
                   child: Padding(
@@ -166,7 +153,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     child: Column(
                       children: [
                         SizedBox(height: 90.h),
-
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.r),
@@ -204,6 +190,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           child: Directionality(
                             textDirection: TextDirection.ltr,
                             child: PinCodeTextField(
+                              enabled: !_isLoading,
                               appContext: context,
                               length: 4,
                               obscureText: false,
@@ -219,6 +206,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   Theme.of(context).colorScheme.onPrimary,
                               textStyle: Theme.of(context).textTheme.bodyMedium,
                               pinTheme: PinTheme(
+                                disabledColor:   Theme.of(
+                                      context,
+                                    ).colorScheme.onSecondaryContainer,
                                 shape: PinCodeFieldShape.box,
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10.r),
@@ -226,16 +216,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 fieldHeight: 64,
                                 fieldWidth: 64,
                                 activeColor:
-                                    isvalid
+                                    _isvalid
                                         ? Colors.green
-                                        : isUnvalid
+                                        : _isUnvalid
                                         ? Colors.red
                                         : AppColors.primaryColor,
-                                // border color when selected
                                 selectedColor:
-                                    isvalid
+                                    _isvalid
                                         ? Colors.green
-                                        : isUnvalid
+                                        : _isUnvalid
                                         ? Colors.red
                                         : AppColors.primaryColor,
                                 inactiveColor:
@@ -257,18 +246,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                 errorBorderColor: Colors.red,
                               ),
                               onChanged: (value) {},
-
                               beforeTextPaste: (text) => true,
                             ),
                           ),
                         ),
                         SizedBox(height: 24.h),
                         CustomButton(
+                          isLoading: _isLoading,
                           text: "التالي",
-                          onPressed: () {
-                            verifyOtp();
-                          },
-                          isEnabled: true,
+                          onPressed: _isButtonEnabled ? null : verifyOtp,
                         ),
                         SizedBox(height: 16.h),
                         SizedBox(
@@ -276,7 +262,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           height: 64.h,
                           child: ElevatedButton(
                             onPressed:
-                                _isSecondButtonDisabled ? null : resendOtp,
+                                _isSecondButtonenabled ? resendOtp : null,
                             style: ElevatedButton.styleFrom(
                               disabledBackgroundColor:
                                   Theme.of(
@@ -292,18 +278,27 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               ),
                               elevation: 0,
                             ),
-                            child: Text(
-                              _isSecondButtonDisabled
-                                  ? 'اعادة الارسال بعد $_secondsRemaining ث'
-                                  : 'إعادة الارسال',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
-                                fontSize: 16,
-                                fontFamily: AppFonts.mainFontName,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            child:
+                                _isResendLoading
+                                    ? LoadingIndicator(
+                                      indicatorType: Indicator.ballPulse,
+                                      colors: const [Colors.white],
+                                      strokeWidth: 2,
+                                    )
+                                    : Text(
+                                      _isSecondButtonenabled
+                                          ? 'إعادة الإرسال'
+                                          : 'إعادة الإرسال بعد $_secondsRemaining ث',
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSecondary,
+                                        fontSize: 16,
+                                        fontFamily: AppFonts.mainFontName,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                           ),
                         ),
                       ],

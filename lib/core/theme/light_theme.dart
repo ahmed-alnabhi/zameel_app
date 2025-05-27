@@ -49,8 +49,8 @@ ThemeData lightTheme = ThemeData(
   ),              
    elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      disabledBackgroundColor: AppColors.primary50opacityColor,
-      disabledForegroundColor: AppColors.textButtonColor,
+      disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.7),
+      disabledForegroundColor: AppColors.textButtonColor.withValues(alpha: 0.7),
     ),
   ),
 );

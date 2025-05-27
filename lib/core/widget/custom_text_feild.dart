@@ -6,6 +6,7 @@ import 'package:zameel/core/theme/app_fonts.dart';
 class CustomTextField extends StatefulWidget {
   final String hintText;
   final bool isPassword;
+  final bool isEnabled;
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
@@ -15,6 +16,7 @@ class CustomTextField extends StatefulWidget {
     required this.isPassword,
     required this.controller,
     this.validator,
+   this.isEnabled = true,
   });
 
   @override
@@ -27,6 +29,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      enabled: widget.isEnabled,
       cursorColor: AppColors.primaryColor,
       controller: widget.controller,
       obscureText: widget.isPassword && !showPassword,
@@ -38,33 +41,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
         color: Theme.of(context).colorScheme.onPrimary,
       ),
       decoration: InputDecoration(
-        
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 19),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(
-            color: AppColors.primaryColor,
-          ),
-        ) ,
+          borderSide: BorderSide(color: AppColors.primaryColor),
+        ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.error,
-          ),
-        ) ,
-         
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
+        ),
+
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.error,
-          ),
-        ) , 
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
+        ),
         errorStyle: TextStyle(
           fontFamily: AppFonts.mainFontName,
           fontSize: 11,
           fontWeight: FontWeight.w400,
           color: Theme.of(context).colorScheme.error,
-        ) , 
+        ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
         hintText: widget.hintText,
@@ -73,7 +69,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        
+
         suffixIcon:
             widget.isPassword
                 ? IconButton(

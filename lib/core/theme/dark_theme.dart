@@ -10,10 +10,10 @@ ThemeData darkTheme = ThemeData(
     onPrimary: AppColors.textColorDarkModePrimary,
     onSecondary: AppColors.textColorDarkModeSecondary,
     onSecondaryContainer: AppColors.textColorLightModePrimary,
-      onTertiaryContainer: AppColors.textColorLightModePrimary,
+    onTertiaryContainer: AppColors.textColorLightModePrimary,
     onSurface: Colors.white,
   ),
-  
+
   scaffoldBackgroundColor: AppColors.backgroundColorDark,
   textTheme: TextTheme(
     displayLarge: TextStyle(
@@ -40,17 +40,17 @@ ThemeData darkTheme = ThemeData(
       fontFamily: AppFonts.mainFontName,
       color: AppColors.textColorDarkModePrimary,
     ),
-      bodySmall: TextStyle(
+    bodySmall: TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w400,
       fontFamily: AppFonts.mainFontName,
       color: AppColors.textColorLightModeSecondary,
-    ) ,
+    ),
   ),
-   elevatedButtonTheme: ElevatedButtonThemeData(
+  elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      disabledBackgroundColor: AppColors.primary50opacityColor,
-      disabledForegroundColor: AppColors.textButtonColor,
+      disabledBackgroundColor: AppColors.primaryColor.withValues(alpha: 0.7),
+      disabledForegroundColor: AppColors.textButtonColor.withValues(alpha: 0.7),
     ),
   ),
 );

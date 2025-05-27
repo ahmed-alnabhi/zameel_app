@@ -1,11 +1,18 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zameel/core/networking/login_service.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_button.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
 import 'package:zameel/screens/authentication/password_recovery/password_recovery_screen.dart';
 import 'package:zameel/screens/authentication/sign_up_screen.dart';
+import 'package:zameel/screens/home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool isButtonEnabled = false;
+  bool _isButtonEnabled = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -30,16 +38,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _updateButtonState() {
     setState(() {
-      isButtonEnabled =
+      _isButtonEnabled =
           _emailController.text.trim().isNotEmpty &&
           _passwordController.text.trim().isNotEmpty;
     });
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _emailController.clear();
-      _passwordController.clear();
+  Future<void> _login() async {
+    String deviceName = await getDeviceName();
+    setState(() {
+      _isLoading = true;
+      _isButtonEnabled = false;
+    });
+    final loginResult = await loginService(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      deviceName: deviceName,
+    );
+    setState(() {
+      _isLoading = false;
+      _isButtonEnabled = true;
+    });
+    if (loginResult['success']) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', loginResult['token']);
+    
+    if (!mounted) return;
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } else {
+      if (!mounted) return;
+     customSnackBar(context, loginResult['message'] , Theme.of(context).colorScheme.error);
     }
   }
 
@@ -105,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 40.h),
 
                       CustomTextField(
+                        isEnabled: _isLoading ? false : true,
                         hintText: "البريد الإلكتروني",
                         isPassword: false,
                         controller: _emailController,
@@ -121,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 10.h),
 
                       CustomTextField(
+                        isEnabled: _isLoading ? false : true,
                         hintText: "كلمة المرور",
                         isPassword: true,
                         controller: _passwordController,
@@ -139,9 +169,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomButton(
+                          isLoading: _isLoading,  
                           text: "تسجيل الدخول",
-                          onPressed: _submitForm,
-                          isEnabled: isButtonEnabled,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _login();
+                            }
+                          },
+                          isEnabled: _isButtonEnabled,
                         ),
                       ),
                       SizedBox(height: 30.h),
@@ -170,5 +205,19 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<String> getDeviceName() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      return '${androidInfo.manufacturer} ${androidInfo.model}';
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      return iosInfo.name ?? 'Unknown iOS Device';
+    } else {
+      return 'Unknown Platform';
+    }
   }
 }

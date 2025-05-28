@@ -70,10 +70,6 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
                             "assets/images/logo.svg",
                             height: 100,
                             width: 200,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.primaryColor,
-                              BlendMode.srcIn,
-                            ),
                           ),
                           SizedBox(height: 60.h),
                           Text(

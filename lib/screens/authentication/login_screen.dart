@@ -99,10 +99,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         "assets/images/logo.svg",
                         height: 100,
                         width: 200,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.primaryColor,
-                          BlendMode.srcIn,
-                        ),
                       ),
                       SizedBox(height: 50.h),
                       Text(

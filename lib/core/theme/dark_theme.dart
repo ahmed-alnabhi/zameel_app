@@ -11,6 +11,7 @@ ThemeData darkTheme = ThemeData(
     onSecondary: AppColors.textColorDarkModeSecondary,
     onSecondaryContainer: AppColors.textColorLightModePrimary,
     onTertiaryContainer: AppColors.textColorLightModePrimary,
+    onTertiary: AppColors.iconTextFieldColorDarkMode,
     onSurface: Colors.white,
   ),
 

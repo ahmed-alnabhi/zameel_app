@@ -11,7 +11,9 @@ ThemeData lightTheme = ThemeData(
     onSecondary: AppColors.textColorLightModeSecondary,
     onSecondaryContainer: AppColors.primaryLightColor,
     onTertiaryContainer: AppColors.containerColor,
+     onTertiary: AppColors.textColorLightModeSecondary,
     onSurface: Colors.white,
+    
   ),
   scaffoldBackgroundColor: AppColors.backgroundColor,
   textTheme: TextTheme(

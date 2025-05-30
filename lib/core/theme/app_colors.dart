@@ -15,4 +15,5 @@ class AppColors {
   static const Color textColorDarkModeSecondary = Color(0xFF7A869A);
   static const Color textButtonColor = Color(0xFFEDEDED);
   static const Color containerColor = Color(0xFFD6DFFF);
+  static const Color iconTextFieldColorDarkMode = Color(0xFFC7C3CC);
 }

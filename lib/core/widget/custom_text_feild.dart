@@ -8,6 +8,8 @@ class CustomTextField extends StatefulWidget {
   final String hintText;
   final bool isPassword;
   final bool isEnabled;
+  final bool hasPrefix;
+  final IconData? prefixIcon;
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
@@ -17,7 +19,9 @@ class CustomTextField extends StatefulWidget {
     required this.isPassword,
     required this.controller,
     this.validator,
-   this.isEnabled = true,
+    this.isEnabled = true,
+    this.hasPrefix = false,
+    this.prefixIcon,
   });
 
   @override
@@ -71,10 +75,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderSide: BorderSide.none,
         ),
 
+        prefixIcon: widget.hasPrefix? Icon(
+          widget.prefixIcon,
+          color: Theme.of(context).colorScheme.onTertiary,
+          size: 24,
+        ) : null ,
+
         suffixIcon:
             widget.isPassword
-                ?   IconButton(
-                  icon: showPassword? Icon(LucideIcons.eye , color: Theme.of(context).colorScheme.primary,size: 24): Icon(LucideIcons.eyeOff,  color: Theme.of(context).colorScheme.primary, size: 24,),
+                ? IconButton(
+                  icon:
+                      showPassword
+                          ? Icon(
+                            LucideIcons.eye,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          )
+                          : Icon(
+                            LucideIcons.eyeOff,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 24,
+                          ),
                   onPressed: () {
                     setState(() {
                       showPassword = !showPassword;

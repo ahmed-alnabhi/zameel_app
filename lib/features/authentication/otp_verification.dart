@@ -10,7 +10,7 @@ import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
-import 'package:zameel/screens/authentication/login_screen.dart';
+import 'package:zameel/features/authentication/login_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String token;
@@ -22,10 +22,10 @@ class OtpVerificationScreen extends StatefulWidget {
   });
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  State<OtpVerificationScreen> createState() => _OtpVerificationfeaturestate();
 }
 
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
   bool _isLoading = false;
   bool _isResendLoading = false;

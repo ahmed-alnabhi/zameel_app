@@ -4,16 +4,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/screens/authentication/otp_verification.dart';
+import 'package:zameel/features/authentication/otp_verification.dart';
 
 class PasswordRecoveryScreen extends StatefulWidget {
   const PasswordRecoveryScreen({super.key});
 
   @override
-  State<PasswordRecoveryScreen> createState() => _PasswordRecoveryScreenState();
+  State<PasswordRecoveryScreen> createState() => _PasswordRecoveryfeaturestate();
 }
 
-class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
+class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   bool isButtonEnabled = false;

@@ -10,7 +10,7 @@ import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/screens/authentication/otp_verification.dart';
+import 'package:zameel/features/authentication/otp_verification.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

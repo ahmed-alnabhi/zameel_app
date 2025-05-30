@@ -3,16 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/screens/authentication/login_screen.dart';
+import 'package:zameel/features/authentication/login_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordfeaturestate();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordfeaturestate extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =

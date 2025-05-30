@@ -7,18 +7,18 @@ import 'package:zameel/core/networking/login_service.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/screens/authentication/password_recovery/password_recovery_screen.dart';
-import 'package:zameel/screens/authentication/sign_up_screen.dart';
-import 'package:zameel/screens/home/home_screen.dart';
+import 'package:zameel/features/authentication/password_recovery/password_recovery_screen.dart';
+import 'package:zameel/features/authentication/sign_up_screen.dart';
+import 'package:zameel/features/home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _Loginfeaturestate();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _Loginfeaturestate extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();

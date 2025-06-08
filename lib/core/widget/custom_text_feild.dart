@@ -12,6 +12,7 @@ class CustomTextField extends StatefulWidget {
   final IconData? prefixIcon;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final double contentHeight;
 
   const CustomTextField({
     super.key,
@@ -22,6 +23,7 @@ class CustomTextField extends StatefulWidget {
     this.isEnabled = true,
     this.hasPrefix = false,
     this.prefixIcon,
+    this.contentHeight = 19,
   });
 
   @override
@@ -46,7 +48,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         color: Theme.of(context).colorScheme.onPrimary,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 19),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: widget.contentHeight),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide(color: AppColors.primaryColor),
@@ -75,11 +77,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderSide: BorderSide.none,
         ),
 
-        prefixIcon: widget.hasPrefix? Icon(
-          widget.prefixIcon,
-          color: Theme.of(context).colorScheme.onTertiary,
-          size: 24,
-        ) : null ,
+        prefixIcon:
+            widget.hasPrefix
+                ? Icon(
+                  widget.prefixIcon,
+                  color: Theme.of(context).colorScheme.onTertiary,
+                  size: 24,
+                )
+                : null,
 
         suffixIcon:
             widget.isPassword

@@ -1,3 +1,4 @@
+// 
 import 'package:flutter/material.dart';
 
 class ResourcesScreen extends StatefulWidget {
@@ -10,14 +11,13 @@ class ResourcesScreen extends StatefulWidget {
 class _ResourcesScreenState extends State<ResourcesScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Colors.amber,
-          height: 500,
-          width: double.infinity,
-        )
-      ],
+    return Scaffold
+    (
+      body: Container(
+        height: 300 ,
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        width: double.infinity,
+       ),
     );
   }
 }

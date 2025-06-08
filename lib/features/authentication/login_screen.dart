@@ -61,7 +61,7 @@ class _Loginfeaturestate extends State<LoginScreen> {
       prefs.setString('token', loginResult['token']);
     
     if (!mounted) return;
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     } else {
      
       if (!mounted) return;

@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/features/home/assignments_screen.dart';
-import 'package:zameel/features/home/post_screen.dart';
+import 'package:zameel/features/home/posts/post_screen.dart';
 import 'package:zameel/features/home/profile_screen.dart';
 import 'package:zameel/features/home/resources_screen.dart';
 
@@ -22,8 +22,8 @@ class _Homefeaturestate extends State<HomeScreen> {
     PostsScreen(),
     ResourcesScreen(),
     AssignmentsScreen(),
-    AssignmentsScreen(),
-   ProfileScreen(),
+    AssignmentsScreen(),// one extra for the empty middle space
+    ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -67,6 +67,8 @@ class _Homefeaturestate extends State<HomeScreen> {
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(LucideIcons.home),
+                   tooltip: 'الصفحة الرئيسية',
+                
                   label: 'الصفحة الرئيسية',
                 ),
                 BottomNavigationBarItem(
@@ -75,11 +77,11 @@ class _Homefeaturestate extends State<HomeScreen> {
                 ),
                 BottomNavigationBarItem(icon: SizedBox.shrink(), label: ''),
                 BottomNavigationBarItem(
-                  icon: Icon(LucideIcons.listTodo),
-                  label: 'الإشعارات',
+                  icon: Icon(LucideIcons.clipboardList),
+                  label: 'التكاليف',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(LucideIcons.user2),
+                  icon: Icon(LucideIcons.user),
                   label: 'الملف الشخصي',
                 ),
               ],

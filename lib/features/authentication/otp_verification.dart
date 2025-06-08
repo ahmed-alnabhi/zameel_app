@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zameel/core/networking/send_otp.dart';
 import 'package:zameel/core/networking/verify_otp.dart';
 import 'package:zameel/core/theme/app_colors.dart';
@@ -11,6 +12,7 @@ import 'package:zameel/core/widget/custom_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/features/authentication/login_screen.dart';
+import 'package:zameel/features/home/home_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String token;
@@ -73,6 +75,8 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
       });
 
       if (resultOfVerifyEmail['success']) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token',widget.token);
         setState(() {
           _isvalid = true;
           _isUnvalid = false;
@@ -82,7 +86,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => LoginScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         });
       } else {
@@ -206,7 +210,8 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
                                   Theme.of(context).colorScheme.onPrimary,
                               textStyle: Theme.of(context).textTheme.bodyMedium,
                               pinTheme: PinTheme(
-                                disabledColor:   Theme.of(
+                                disabledColor:
+                                    Theme.of(
                                       context,
                                     ).colorScheme.onSecondaryContainer,
                                 shape: PinCodeFieldShape.box,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zameel/features/home/posts/shimmer_effect.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -10,14 +11,6 @@ class AssignmentsScreen extends StatefulWidget {
 class _AssignmentsScreenState extends State<AssignmentsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          color: Colors.blue,
-          height:500,
-          width: double.infinity,
-        )
-      ],
-    );
+    return ShimmerEffect();
   }
 }

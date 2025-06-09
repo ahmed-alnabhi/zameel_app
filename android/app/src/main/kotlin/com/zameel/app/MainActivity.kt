@@ -1,4 +1,4 @@
-package com.example.zameel
+package com.zameel.app
 
 import io.flutter.embedding.android.FlutterActivity
 

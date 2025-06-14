@@ -10,9 +10,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:zameel/core/networking/fetch_posts_service.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/features/home/assignments_screen.dart';
-import 'package:zameel/features/home/posts/get_color_by_ext.dart';
+import 'package:zameel/core/functions/get_color_by_ext.dart';
 import 'package:zameel/core/models/post_model.dart';
+import 'package:zameel/features/home/posts/publish_post.dart';
 import 'package:zameel/features/home/posts/shimmer_effect.dart';
 
 class PostsScreen extends StatefulWidget {
@@ -31,10 +31,11 @@ class _PostsScreenState extends State<PostsScreen> {
   bool erorOccurred = false;
   bool hasMore = true;
   String? lastCursor;
-
+  int? roll;
   @override
   void initState() {
     super.initState();
+    getRoll();
     getPosts();
 
     _scrollController.addListener(() {
@@ -45,6 +46,11 @@ class _PostsScreenState extends State<PostsScreen> {
         getPosts();
       }
     });
+  }
+
+  Future<void> getRoll() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    roll = prefs.getInt('roll');
   }
 
   Future<void> refreshPosts() async {
@@ -135,13 +141,17 @@ class _PostsScreenState extends State<PostsScreen> {
       appBar: AppBar(
         scrolledUnderElevation: 0,
         elevation: 0,
-        title: CustomTextField(
-          contentHeight: 16,
-          hasPrefix: true,
-          prefixIcon: LucideIcons.search,
-          hintText: "ملزمة قواعد البيانات",
-          isPassword: false,
-          controller: SearchController(),
+        title: Column(
+          children: [
+            CustomTextField(
+              contentHeight: 16,
+              hasPrefix: true,
+              prefixIcon: LucideIcons.search,
+              hintText: "ملزمة قواعد البيانات",
+              isPassword: false,
+              controller: SearchController(),
+            ),
+          ],
         ),
         toolbarHeight: 70,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -299,113 +309,36 @@ class _PostsScreenState extends State<PostsScreen> {
                                   // الصور
                                   if (post.hasImages)
                                     post.imageFiles.length == 1
-                                        ? GestureDetector(
-                                            onTap: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (_) => Dialog(
-                                                            backgroundColor:
-                                                                Colors.black
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.2,
-                                                                    ),
-                                                            insetPadding:
-                                                                EdgeInsets.zero,
-                                                            child: PhotoViewGallery.builder(
-                                                              itemCount:
-                                                                  post
-                                                                      .imageFiles
-                                                                      .length,
-                                                              pageController:
-                                                                  PageController(
-                                                                    initialPage:
-                                                                        index,
-                                                                  ),
-                                                              backgroundDecoration:
-                                                                  const BoxDecoration(
-                                                                    color:
-                                                                        Colors
-                                                                            .black,
-                                                                  ),
-                                                              builder: (
-                                                                context,
-                                                                i,
-                                                              ) {
-                                                                final imageFile =
-                                                                    post.imageFiles[i];
-                                                                return PhotoViewGalleryPageOptions(
-                                                                  imageProvider:
-                                                                      CachedNetworkImageProvider(
-                                                                        'https://zameel.s3.amazonaws.com/${imageFile.urls[0]}',
-                                                                      ),
-                                                                  heroAttributes:
-                                                                      PhotoViewHeroAttributes(
-                                                                        tag:
-                                                                            imageFile.urls[0],
-                                                                      ),
-                                                                  errorBuilder:
-                                                                      (
-                                                                        context,
-                                                                        error,
-                                                                        stackTrace,
-                                                                      ) => const Center(
-                                                                        child: Icon(
-                                                                           LucideIcons.cloudOff,
-                                                                        ),
-                                                                      ),
-                                                                );
-                                                              },
-                                                              loadingBuilder:
-                                                                  (
-                                                                    context,
-                                                                    event,
-                                                                  ) => const Center(
-                                                                    child:
-                                                                        CircularProgressIndicator(),
-                                                                  ),
+                                        ? CachedNetworkImage(
+                                          imageUrl:
+                                              'https://zameel.s3.amazonaws.com/${post.imageFiles[0].urls[0]}',
+                                          fit: BoxFit.cover,
+                                          placeholder:
+                                              (_, __) => Shimmer.fromColors(
+                                                baseColor:
+                                                    Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.grey[300]!
+                                                        : Colors.grey[800]!,
+                                                highlightColor:
+                                                    Theme.of(
+                                                              context,
+                                                            ).brightness ==
+                                                            Brightness.light
+                                                        ? Colors.grey[100]!
+                                                        : Colors.grey[800]!
+                                                            .withValues(
+                                                              alpha: 0.9,
                                                             ),
-                                                          ),
-                                                    );
-                                                  },
-                                          child: InteractiveViewer(
-                                            child: SizedBox(
-                                              width: double.infinity,
-                                              height: 320,
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    'https://zameel.s3.amazonaws.com/${post.imageFiles[0].urls[0]}',
-                                                fit: BoxFit.cover,
-                                                placeholder:
-                                                    (_, __) => Shimmer.fromColors(
-                                                      baseColor:
-                                                          Theme.of(
-                                                                    context,
-                                                                  ).brightness ==
-                                                                  Brightness.light
-                                                              ? Colors.grey[300]!
-                                                              : Colors.grey[800]!,
-                                                      highlightColor:
-                                                          Theme.of(
-                                                                    context,
-                                                                  ).brightness ==
-                                                                  Brightness.light
-                                                              ? Colors.grey[100]!
-                                                              : Colors.grey[800]!
-                                                                  .withValues(
-                                                                    alpha: 0.9,
-                                                                  ),
-                                                      child: Container(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Icon(LucideIcons.cloudOff),
+                                                child: Container(
+                                                  color: Colors.white,
+                                                ),
                                               ),
-                                            ),
-                                          ),
+                                          errorWidget:
+                                              (context, url, error) =>
+                                                  Icon(LucideIcons.cloudOff),
                                         )
                                         : ImageSlideshow(
                                           width: double.infinity,
@@ -473,7 +406,8 @@ class _PostsScreenState extends State<PostsScreen> {
                                                                         stackTrace,
                                                                       ) => const Center(
                                                                         child: Icon(
-                                                                           LucideIcons.cloudOff,
+                                                                          LucideIcons
+                                                                              .cloudOff,
                                                                         ),
                                                                       ),
                                                                 );
@@ -652,6 +586,17 @@ class _PostsScreenState extends State<PostsScreen> {
                           },
                         ),
               ),
+      floatingActionButton:
+          (roll == 1 || roll == 2 || roll == 3 || roll == 4)
+              ? FloatingActionButton(
+                heroTag: "publishPost",
+                onPressed: () {
+
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => PublishPost(),));
+                },
+                child: Icon(LucideIcons.plus),
+              )
+              : null,
     );
   }
 }

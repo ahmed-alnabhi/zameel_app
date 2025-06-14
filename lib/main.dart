@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
             themeMode: currentTheme,
             theme:   lightTheme ,
             darkTheme:  darkTheme,
-            home: LoginScreen() // HomeScreen() 
+            home:   HomeScreen()
           ),
     );
   }

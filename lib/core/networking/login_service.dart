@@ -27,6 +27,7 @@ Future<Map<String, dynamic>> loginService({
         'success': true,
         'name': data['data']['name'],
         'token': data['data']['token'],
+        'roll': data['data']['role_id'],
         'statusCode': response.statusCode,
       };
     } else {

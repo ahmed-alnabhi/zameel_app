@@ -59,13 +59,21 @@ class _Loginfeaturestate extends State<LoginScreen> {
     if (loginResult['success']) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', loginResult['token']);
+      prefs.setInt('roll', loginResult['roll']);
     
-    if (!mounted) return;
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-    } else {
-     
+
       if (!mounted) return;
-     customSnackBar(context, loginResult['message'] , Theme.of(context).colorScheme.error);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      if (!mounted) return;
+      customSnackBar(
+        context,
+        loginResult['message'],
+        Theme.of(context).colorScheme.error,
+      );
     }
   }
 
@@ -163,7 +171,7 @@ class _Loginfeaturestate extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: CustomButton(
-                          isLoading: _isLoading,  
+                          isLoading: _isLoading,
                           text: "تسجيل الدخول",
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -190,7 +198,6 @@ class _Loginfeaturestate extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: 20.h),
-                      
                     ],
                   ),
                 ),
@@ -201,6 +208,4 @@ class _Loginfeaturestate extends State<LoginScreen> {
       ),
     );
   }
-
-
 }

@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:zameel/core/networking/password_recovery/send_otp.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
-import 'package:zameel/features/authentication/otp_verification.dart';
+import 'package:zameel/features/authentication/password_recovery/otp_verification_reset_password.dart';
 
 class PasswordRecoveryScreen extends StatefulWidget {
   const PasswordRecoveryScreen({super.key});
 
   @override
-  State<PasswordRecoveryScreen> createState() => _PasswordRecoveryfeaturestate();
+  State<PasswordRecoveryScreen> createState() =>
+      _PasswordRecoveryfeaturestate();
 }
 
 class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
-  bool isButtonEnabled = false;
+  bool isButtonEnabled = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -30,11 +34,34 @@ class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
     });
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-     
-  Navigator.push(context, MaterialPageRoute(builder: (context) =>  OtpVerificationScreen(email: _emailController.text, token: "",)));
-    
+      setState(() {
+        isButtonEnabled = false;
+        isLoading = true;
+      });
+      final result = await sendRecoveryOtp(_emailController.text.trim());
+      if (result['success'] == true) {
+        setState(() {
+          isButtonEnabled = true;
+          isLoading = false;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => OtpVerificationResetPasswordScreen(
+                  email: _emailController.text,
+                ),
+          ),
+        );
+      } else {
+        setState(() {
+          isButtonEnabled = true;
+          isLoading = false;
+        });
+        customSnackBar(context, "تعذر الارسال حاول مجددا $result", Colors.red);
+      }
     }
   }
 
@@ -56,10 +83,10 @@ class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  SizedBox(height: 20.h,) ,
-                  customArrowBack(context) ,
+                  SizedBox(height: 20.h),
+                  customArrowBack(context),
                   ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 735),
+                    constraints: const BoxConstraints(maxWidth: 735),
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30.w),
                       child: Column(
@@ -100,8 +127,8 @@ class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
                             text: "استعادة كلمة المرور",
                             onPressed: _submitForm,
                             isEnabled: isButtonEnabled,
+                            isLoading: isLoading,
                           ),
-                         
                         ],
                       ),
                     ),

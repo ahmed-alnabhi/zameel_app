@@ -3,10 +3,12 @@ import 'package:zameel/core/networking/constant.dart';
 
 Dio dio = Dio();
 
-Future<Map<String, dynamic>> createChat({required String? token}) async {
+Future<Map<String, dynamic>> fetchMajorsGroups({
+  required String? token,
+}) async {
   try {
-    final response = await dio.post(
-      '$baseUrl/chat/create',
+    final response = await dio.get(
+      '$baseUrl/majors/groups',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -17,30 +19,26 @@ Future<Map<String, dynamic>> createChat({required String? token}) async {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final data = response.data;
+        final data = response.data;
       return {
         'success': true,
-        'chat_id': data['data']['id'],
+        'data': data['data'], 
+        'statusCode': response.statusCode,
+      };
+    } else {
+      return {
+        'success': false,
+        'message': 'Failed to fetch data',
         'statusCode': response.statusCode,
       };
     }
-    return {
-      'success': false,
-      'message': 'Failed',
-      'statusCode': response.statusCode,
-    };
   } on DioException catch (e) {
-    if (e.response?.statusCode == 500) {
-      return {'success': false, 'message': e, 'statusCode': 500};
-    }
-
     return {
       'success': false,
-      'message': e.response?.data['message'],
-      'statusCode': e.response?.statusCode,
+      'message': e.response?.data['message'] ?? 'Connection error',
+      'statusCode': e.response?.statusCode ?? 500,
     };
   } catch (e) {
-    print(e);
     return {
       'success': false,
       'message': 'An unexpected error occurred: $e',

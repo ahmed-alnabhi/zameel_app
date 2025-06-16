@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zameel/core/networking/chat/create_chat.dart';
+import 'package:zameel/core/functions/get_roll_id.dart';
+import 'package:zameel/core/functions/get_token.dart';
+import 'package:zameel/core/networking/resources_services/fetch_student_groups.dart';
+import 'package:zameel/features/home/profile/join_requests_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,6 +12,23 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  int? roll;
+  String? token;
+  List<int> groupIds = [];
+  Future<void> getRollAndToken() async {
+    roll = await getRoll();
+    setState(() {});
+    token = await getToken();
+    final result = await fetchStudentGroups(token: token);
+    groupIds = await result['data'];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getRollAndToken();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -67,24 +86,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               SizedBox(height: 300),
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  borderRadius: BorderRadius.circular(5),
+              if (roll == 4)
+                Container(
+                  //  padding: EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  height: 40,
+                  width: double.infinity,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                       if (groupIds.isNotEmpty || token != null) {
+                         Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => JoinRequestsScreen(
+                                    groupId: groupIds.first,
+                                    token: token!,
+                                  ),
+                            ),
+                          );
+                       }
+                        },
+                        icon: Icon(Icons.arrow_back_ios_new),
+                      ),
+                      Text("طلبات الانضمام", style: TextStyle(fontSize: 14)),
+                    ],
+                  ),
                 ),
-                height: 90,
-                width: double.infinity,
-              ),
+
               ElevatedButton(
-                onPressed: ()async {
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  String? token =prefs.getString('token');
-                  createChat(
-                   token: token,
-                  );
-                  print(token);
+                onPressed: () {
+                  //  final result = await fetchJoinRequests(token: "49|JX9bCmlxMGefGihRuHrgHmXwC9TDabwXXPWk5fIn0ee27d0f", groupId: 1);
                 },
                 child: Text("data"),
+
               ),
             ],
           ),

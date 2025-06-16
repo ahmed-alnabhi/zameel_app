@@ -18,8 +18,8 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController chatController = TextEditingController();
   late PusherChannelsFlutter _pusher;
-  final String chatId = '9f274d32-52f3-4f17-881c-0d7dfa4b40c3'; // ID المحادثة
- String  token = "320|HH5UzdsIvlnFYE10vTMorhdn2KQzK5a1mwPAOKbM964a0555";
+  final String chatId = '9f27be20-6e33-44d5-b3fe-1753789513ed'; // ID المحادثة
+   String  token = "32|CoWyfisnzau4AgSrvFkxYDNsmArHElvdZAOfwK4499c4eabc";
 
   @override
   void initState() {

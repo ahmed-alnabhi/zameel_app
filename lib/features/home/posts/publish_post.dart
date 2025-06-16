@@ -93,6 +93,7 @@ class _PublishPostState extends State<PublishPost> {
     }
     final result = await fetchStudentGroups(token: token);
     if (result['success']) {
+      
       groupIds = await result['data'];
        showDialog(
       context: context,
@@ -137,7 +138,8 @@ class _PublishPostState extends State<PublishPost> {
       });
     } catch (e) {
       Navigator.pop(context);
-      customSnackBar(context, "تعذر الارسال ", Colors.red);
+      
+      customSnackBar(context, "تعذر الارسال $e $groupIds", Colors.red);
     }
 
     } else {

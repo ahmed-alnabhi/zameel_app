@@ -25,6 +25,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   bool isLoading = false;
   bool hasError = false;
   int? roll;
+  bool noGroupId = false;
   Future<void> _fetchBooks() async {
     setState(() {
       isLoading = true;
@@ -33,6 +34,12 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
     final String? token = prefs.getString('token');
     final result = await fetchStudentGroups(token: token);
     if (result['success']) {
+      if (result['data'].isEmpty) {
+        setState(() {
+          noGroupId = true;
+        });
+        return;
+      }
       groupIds = await result['data'];
       final bookResult = await fetchAllBooks(
         token: token,
@@ -113,189 +120,228 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
           controller: SearchController(),
         ),
       ),
-      body: DefaultTabController(
-        length: 2,
-        child: Column(
-          children: [
-            TabBar(
-              dividerHeight: 0,
-              unselectedLabelColor: Theme.of(context).colorScheme.onPrimary,
-              labelStyle: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                fontFamily: AppFonts.mainFontName,
-              ),
-              tabs: [Tab(text: 'الفصل الاول'), Tab(text: 'الفصل الثاني')],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : semester1SubjectIds.isEmpty
-                      ? Center(
-                        child: Text(
-                          "لا يوجد مواد لهذا الفصل",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                            fontSize: 16,
-                          ),
-                        ),
-                      )
-                      : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                              ),
-                          itemCount: semester1SubjectIds.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final subjectId = semester1SubjectIds[index];
-                            final subjectName =
-                                subjectNames[subjectId] ?? "جاري التحميل...";
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => SubjectBooksScreen(
-                                          groupId: groupIds.first,
-                                          semester: 1,
-                                          subjectId: subjectId,
-                                          subjectName: subjectName,
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 50,
-                                margin: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onSecondaryContainer,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.r),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "assets/images/folder.svg",
-                                        height: 90,
-                                        width: 90,
-                                        colorFilter: ColorFilter.mode(
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Color(0xff333333)
-                                              : Color(0xff999999),
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        subjectName,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: AppFonts.mainFontName,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+      body:
+          noGroupId
+              ? Center(child: Text("لم يتم تأكيد انضمامك لدفعة"))
+              : DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    TabBar(
+                      dividerHeight: 0,
+                      unselectedLabelColor:
+                          Theme.of(context).colorScheme.onPrimary,
+                      labelStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: AppFonts.mainFontName,
                       ),
-                  isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                              ),
-                          itemCount: semester2SubjectIds.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final subjectId = semester2SubjectIds[index];
-                            final subjectName =
-                                subjectNames[subjectId] ?? "جاري التحميل...";
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => SubjectBooksScreen(
-                                          groupId: groupIds.first,
-                                          semester: 2,
-                                          subjectId: subjectId,
-                                          subjectName: subjectName,
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: 50,
-                                margin: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.onSecondaryContainer,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.r),
+                      tabs: [
+                        Tab(text: 'الفصل الاول'),
+                        Tab(text: 'الفصل الثاني'),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : semester1SubjectIds.isEmpty
+                              ? Center(
+                                child: Text(
+                                  "لا يوجد مواد لهذا الفصل",
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                    fontSize: 16,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "assets/images/folder.svg",
-                                        height: 90,
-                                        width: 90,
-                                        colorFilter: ColorFilter.mode(
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Color(0xff333333)
-                                              : Color(0xff999999),
-                                          BlendMode.srcIn,
+                              )
+                              : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                      ),
+                                  itemCount: semester1SubjectIds.length,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    final subjectId =
+                                        semester1SubjectIds[index];
+                                    final subjectName =
+                                        subjectNames[subjectId] ??
+                                        "جاري التحميل...";
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SubjectBooksScreen(
+                                                  groupId: groupIds.first,
+                                                  semester: 1,
+                                                  subjectId: subjectId,
+                                                  subjectName: subjectName,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        margin: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.r),
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SvgPicture.asset(
+                                                "assets/images/folder.svg",
+                                                height: 90,
+                                                width: 90,
+                                                colorFilter: ColorFilter.mode(
+                                                  Theme.of(
+                                                            context,
+                                                          ).brightness ==
+                                                          Brightness.dark
+                                                      ? Color(0xff333333)
+                                                      : Color(0xff999999),
+                                                  BlendMode.srcIn,
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                subjectName,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontFamily:
+                                                      AppFonts.mainFontName,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        subjectName,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: AppFonts.mainFontName,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                          isLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : semester2SubjectIds.isEmpty
+                              ? Center(
+                                child: Text(
+                                  "لا يوجد مواد لهذا الفصل",
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.error,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              )
+                              : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                      ),
+                                  itemCount: semester2SubjectIds.length,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    final subjectId =
+                                        semester2SubjectIds[index];
+                                    final subjectName =
+                                        subjectNames[subjectId] ??
+                                        "جاري التحميل...";
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SubjectBooksScreen(
+                                                  groupId: groupIds.first,
+                                                  semester: 2,
+                                                  subjectId: subjectId,
+                                                  subjectName: subjectName,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 50,
+                                        margin: EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10.r),
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SvgPicture.asset(
+                                                "assets/images/folder.svg",
+                                                height: 90,
+                                                width: 90,
+                                                colorFilter: ColorFilter.mode(
+                                                  Theme.of(
+                                                            context,
+                                                          ).brightness ==
+                                                          Brightness.dark
+                                                      ? Color(0xff333333)
+                                                      : Color(0xff999999),
+                                                  BlendMode.srcIn,
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                subjectName,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontFamily:
+                                                      AppFonts.mainFontName,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                        ],
                       ),
-                ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

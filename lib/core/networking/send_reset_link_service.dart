@@ -7,7 +7,7 @@ Future<Map<String, dynamic>> senResetLink(String email) async {
 
     final response = await dio.post(
       '$baseUrl/forgot-password',
-      data: {'email': email},
+      data: {'email': "lutfi@example.com"},
       options: Options(
         headers: {
           'Accept': 'application/json',

@@ -2,32 +2,32 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zameel/core/networking/send_otp.dart';
-import 'package:zameel/core/networking/verify_otp.dart';
+import 'package:zameel/core/networking/password_recovery/send_otp.dart';
+import 'package:zameel/core/networking/password_recovery/verify_reset_password_otp.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
 import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
-import 'package:zameel/features/home/home_screen.dart';
+import 'package:zameel/core/widget/custom_text_feild.dart';
+import 'package:zameel/features/authentication/login_screen.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
-  final String token;
+class OtpVerificationResetPasswordScreen extends StatefulWidget {
   final String email;
-  const OtpVerificationScreen({
-    super.key,
-    required this.email,
-    required this.token,
-  });
+  const OtpVerificationResetPasswordScreen({super.key, required this.email});
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationfeaturestate();
+  State<OtpVerificationResetPasswordScreen> createState() =>
+      _OtpVerificationfeaturestate();
 }
 
-class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
+class _OtpVerificationfeaturestate
+    extends State<OtpVerificationResetPasswordScreen> {
   final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
   bool _isResendLoading = false;
   bool _isvalid = false;
@@ -58,34 +58,35 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
     });
   }
 
-  Future<void> verifyOtp() async {
-    if (_otpController.text.length == 4) {
+  Future<void> verifyResetPassword() async {
+    if (_otpController.text.length == 6) {
       setState(() {
         _isLoading = true;
         _isButtonEnabled = false;
       });
-      final resultOfVerifyEmail = await verifyEmail(
-        widget.token,
-        _otpController.text.trim(),
+      final result = await verifyResetPasswordOtp(
+        email: widget.email,
+        otp: _otpController.text,
+        password: _passwordController.text.trim(),
+        passwordConfirmation: _confirmPasswordController.text.trim(),
       );
 
       setState(() {
         _isLoading = false;
       });
-
-      if (resultOfVerifyEmail['success']) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token',widget.token);
+      if (result['success']) {
         setState(() {
           _isvalid = true;
           _isUnvalid = false;
+          _isLoading = false;
+          _isButtonEnabled = true;
         });
         if (!mounted) return;
         Future.delayed(const Duration(milliseconds: 400), () {
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => LoginScreen()),
           );
         });
       } else {
@@ -94,11 +95,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
           _isvalid = false;
           _isUnvalid = true;
         });
-        customSnackBar(
-          context,
-          resultOfVerifyEmail['message'],
-          Theme.of(context).colorScheme.error,
-        );
+        customSnackBar(context, result['message'], Colors.red);
       }
     }
   }
@@ -108,7 +105,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
       _isResendLoading = true;
     });
 
-    final resultOfResendOtp = await sendEmailNotification(widget.token);
+    final resultOfResendOtp = await sendRecoveryOtp(widget.email);
 
     setState(() {
       _isResendLoading = false;
@@ -147,7 +144,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 30.h),
+                SizedBox(height: 15.h),
                 customArrowBack(context),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 735),
@@ -155,7 +152,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 30.w),
                     child: Column(
                       children: [
-                        SizedBox(height: 90.h),
+                        SizedBox(height: 20.h),
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.r),
@@ -195,7 +192,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
                             child: PinCodeTextField(
                               enabled: !_isLoading,
                               appContext: context,
-                              length: 4,
+                              length: 6,
                               obscureText: false,
                               controller: _otpController,
                               animationType: AnimationType.scale,
@@ -217,8 +214,8 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10.r),
                                 ),
-                                fieldHeight: 64,
-                                fieldWidth: 64,
+                                fieldHeight: 50,
+                                fieldWidth: 50,
                                 activeColor:
                                     _isvalid
                                         ? Colors.green
@@ -254,11 +251,55 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 24.h),
+
+                        CustomTextField(
+                          hintText: "كلمة المرور الجديدة",
+                          isPassword: true,
+                          controller: _passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "الرجاء إدخال كلمة المرور";
+                            }
+                            if (value.length < 8) {
+                              return "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
+                            }
+                            if (!RegExp(r'[0-9]').hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على رقم واحد على الأقل";
+                            }
+                            if (!RegExp(
+                              r'[!@#$%^&*(),.?":{}|<>]',
+                            ).hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على رمز واحد على الأقل";
+                            }
+                            if (!RegExp(
+                              r'(?=.*[a-z])(?=.*[A-Z])',
+                            ).hasMatch(value)) {
+                              return "كلمة المرور يجب أن تحتوي على حرف صغير وحرف كبير على الأقل";
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10.h),
+                        CustomTextField(
+                          hintText: "تأكيد كلمة المرور الجديدة",
+                          isPassword: true,
+                          controller: _confirmPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "الرجاء إدخال تأكيد كلمة المرور";
+                            }
+                            if (value != _passwordController.text) {
+                              return "كلمة المرور غير متطابقة";
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 30.h),
                         CustomButton(
                           isLoading: _isLoading,
                           text: "التالي",
-                          onPressed: _isButtonEnabled ? null : verifyOtp,
+                          onPressed:
+                              _isButtonEnabled ? null : verifyResetPassword,
                         ),
                         SizedBox(height: 16.h),
                         SizedBox(

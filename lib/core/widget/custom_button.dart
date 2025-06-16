@@ -37,9 +37,9 @@ class CustomButton extends StatelessWidget {
           elevation: 0,
         ),
         child: isLoading?  LoadingIndicator(
-              indicatorType: Indicator.ballPulse,
+              indicatorType: Indicator.circleStrokeSpin,
               colors: const [Colors.white],
-              strokeWidth: 2,
+              strokeWidth: 3,
               
             ) : Text(
           text,

@@ -5,7 +5,7 @@ import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/features/home/assignments_screen.dart';
 import 'package:zameel/features/home/chat_bot/chat_screen.dart';
 import 'package:zameel/features/home/posts/post_screen.dart';
-import 'package:zameel/features/home/profile_screen.dart';
+import 'package:zameel/features/home/profile/profile_screen.dart';
 import 'package:zameel/features/home/resources/resources_screen.dart';
 
 class HomeScreen extends StatefulWidget {

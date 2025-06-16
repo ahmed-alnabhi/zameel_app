@@ -3,10 +3,13 @@ import 'package:zameel/core/networking/constant.dart';
 
 Dio dio = Dio();
 
-Future<Map<String, dynamic>> createChat({required String? token}) async {
+Future<Map<String, dynamic>> acceptRequest({
+  required String token,
+  required int requestId,
+}) async {
   try {
     final response = await dio.post(
-      '$baseUrl/chat/create',
+      '$baseUrl/applies/$requestId/accept',
       options: Options(
         headers: {
           'Content-Type': 'application/json',
@@ -17,30 +20,28 @@ Future<Map<String, dynamic>> createChat({required String? token}) async {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final data = response.data;
+      return {'success': true, 'statusCode': response.statusCode};
+    } else {
+      return {'success': false, 'statusCode': response.statusCode};
+    }
+  } on DioException catch (e) {
+    print(e);
+    print(token);
+    print(requestId);
+    if (e.response?.statusCode == 500) {
+      print(e.response?.data);
       return {
-        'success': true,
-        'chat_id': data['data']['id'],
-        'statusCode': response.statusCode,
+        'success': false,
+        'message': e,
+        'statusCode': e.response?.statusCode,
       };
     }
     return {
       'success': false,
-      'message': 'Failed',
-      'statusCode': response.statusCode,
-    };
-  } on DioException catch (e) {
-    if (e.response?.statusCode == 500) {
-      return {'success': false, 'message': e, 'statusCode': 500};
-    }
-
-    return {
-      'success': false,
-      'message': e.response?.data['message'],
-      'statusCode': e.response?.statusCode,
+      'message': e.response?.data['message'] ?? 'Connection error      $e',
+      'statusCode': e.response?.statusCode ?? 500,
     };
   } catch (e) {
-    print(e);
     return {
       'success': false,
       'message': 'An unexpected error occurred: $e',

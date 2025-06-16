@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:zameel/core/networking/fetch_posts_service.dart';
 import 'package:zameel/core/theme/app_colors.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/core/widget/custom_text_feild.dart';
 import 'package:zameel/core/functions/get_color_by_ext.dart';
 import 'package:zameel/core/models/post_model.dart';
@@ -106,6 +107,7 @@ class _PostsScreenState extends State<PostsScreen> {
         });
       }
     } catch (e) {
+      customSnackBar(context, "$e", Colors.red);
       setState(() {
         erorOccurred = true;
         hasMore = false;
@@ -591,8 +593,10 @@ class _PostsScreenState extends State<PostsScreen> {
               ? FloatingActionButton(
                 heroTag: "publishPost",
                 onPressed: () {
-
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => PublishPost(),));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PublishPost()),
+                  );
                 },
                 child: Icon(LucideIcons.plus),
               )

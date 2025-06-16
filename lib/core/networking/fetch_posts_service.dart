@@ -14,8 +14,8 @@ class PostService {
   );
 
   Future<Map<String, dynamic>> fetchPostsService({
-   required String? token,
-   required String? cursor,
+    required String? token,
+    required String? cursor,
     bool? before,
   }) async {
     try {
@@ -23,13 +23,7 @@ class PostService {
         '/posts',
         queryParameters: {'cursor': cursor, 'before': before},
 
-      
-        options: Options(
-          headers: {
-            'Authorization':
-                'Bearer $token',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -65,5 +59,4 @@ class PostService {
       };
     }
   }
-
 }

@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/networking/join_class/send_join_request.dart';
-import 'package:zameel/core/theme/app_fonts.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
-import 'package:zameel/features/home/home_screen.dart';
+import 'package:zameel/features/home/profile/profile_screen.dart';
 import 'package:zameel/features/join_class/custom_dropdown_feild.dart';
 
-class RequestJoinClassScreen extends StatefulWidget {
+class RequestJoinClassAgainScreen extends StatefulWidget {
   final String token;
   final List<dynamic> majorsData;
-  const RequestJoinClassScreen({
+  const RequestJoinClassAgainScreen({
     super.key,
     required this.majorsData,
     required this.token,
   });
 
   @override
-  State<RequestJoinClassScreen> createState() => _RequestJoinClassScreenState();
+  State<RequestJoinClassAgainScreen> createState() =>
+      _RequestJoinClassAgainScreenState();
 }
 
-class _RequestJoinClassScreenState extends State<RequestJoinClassScreen> {
+class _RequestJoinClassAgainScreenState
+    extends State<RequestJoinClassAgainScreen> {
   String? selectedCollege;
   String? selectedProgram;
   int? selectedGroupId;
@@ -199,70 +200,18 @@ class _RequestJoinClassScreenState extends State<RequestJoinClassScreen> {
                                   setState(() {
                                     isLoading = false;
                                   });
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (context) => Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: AlertDialog(
-                                            title: Text(
-                                              ' تم إرسال الطلب بنجاح',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.onPrimary,
-                                                fontFamily:
-                                                    AppFonts.mainFontName,
-                                              ),
-                                            ),
-
-                                            content: Text(
-                                              'سيتم تحويلكم الى التطبيق لكن  لن تستطيعوا الوصول الى بيانات الدفعة حتى يتم الموافقة عليكم',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.onPrimary,
-                                                height: 1.9,
-                                                fontFamily:
-                                                    AppFonts.mainFontName,
-                                              ),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(
-                                                    context,
-                                                    rootNavigator: true,
-                                                  ).pushReplacement(
-                                                    MaterialPageRoute(
-                                                      builder:
-                                                          (_) => HomeScreen(),
-                                                    ),
-                                                  );
-                                                },
-                                                child: Text(
-                                                  'حسنا',
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color:
-                                                        Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary,
-                                                    fontFamily:
-                                                        AppFonts.mainFontName,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                   
+                                  customSnackBar(
+                                    context,
+                                    "تم إرسال طلب الالتحاق بنجاح",
+                                    Colors.green,
                                   );
-                                  //  Navigator.of(context).pop();
+                                  
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
                                 } else {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
                                   customSnackBar(
                                     context,
                                     "${result['data']} ",

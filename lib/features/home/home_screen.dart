@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:zameel/core/theme/app_colors.dart';
-import 'package:zameel/features/home/assignments_screen.dart';
+import 'package:zameel/features/home/assignments/assignments_screen.dart';
 import 'package:zameel/features/home/chat_bot/chat_screen.dart';
 import 'package:zameel/features/home/posts/post_screen.dart';
 import 'package:zameel/features/home/profile/profile_screen.dart';
@@ -36,6 +36,7 @@ class _Homefeaturestate extends State<HomeScreen> {
           centerTitle: true,
           toolbarHeight: 60,
           scrolledUnderElevation: 0,
+          automaticallyImplyLeading: false,
           elevation: 0,
           title: Column(
             children: [

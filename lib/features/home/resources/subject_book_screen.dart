@@ -194,7 +194,7 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                           child: Text(
                                             getFileExtension(
                                               books[index]['path'],
-                                            ), // مثل PDF, DOCX, PPTX
+                                            ),
                                             style: TextStyle(
                                               color: getColorByExtension(
                                                 getFileExtension(
@@ -229,7 +229,9 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                                   : Colors.black,
                                           size: 20,
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          print(books[index]['id']);
+                                        },
                                       ),
                                       SizedBox(width: 5),
                                     ],
@@ -254,7 +256,7 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                       groupId: widget.groupId,
                     );
                   },
-                  child: Icon(LucideIcons.upload),
+                  child: Icon(LucideIcons.upload, color: Colors.white),
                 )
                 : null,
       ),
@@ -383,9 +385,9 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                   isUpLoading = true;
                                 });
                                 if (bookName.isEmpty || selectedFile == null) {
-                                   setState(() {
-                                  isUpLoading = false;
-                                });
+                                  setState(() {
+                                    isUpLoading = false;
+                                  });
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor:
@@ -421,10 +423,11 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                   semester: semester,
                                   groupId: groupId,
                                 );
-                                   setState(() {
+                                setState(() {
                                   isUpLoading = false;
                                 });
                                 Navigator.pop(context);
+                              
                                 _fetchSubjectBooks(); // تحديث قائمة الكتب بعد الرفع
                               },
                               child: Text(

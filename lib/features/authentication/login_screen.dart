@@ -60,8 +60,10 @@ class _Loginfeaturestate extends State<LoginScreen> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', loginResult['token']);
       prefs.setInt('roll', loginResult['roll']);
-    
-
+      prefs.setString('name', loginResult['name']);
+      prefs.setString('email', loginResult['email']); 
+      prefs.setBool('isLoggedIn', true);
+     
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

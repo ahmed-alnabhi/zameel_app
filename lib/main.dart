@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/theme/dark_theme.dart';
 import 'package:zameel/core/theme/light_theme.dart';
 import 'package:zameel/features/authentication/login_screen.dart';
-import 'package:zameel/features/home/home_screen.dart';
 
 
 void main() {
@@ -45,7 +44,7 @@ class _MyAppState extends State<MyApp> {
             themeMode: currentTheme,
             theme:   lightTheme ,
             darkTheme:  darkTheme,
-            home: HomeScreen()
+            home:  LoginScreen()
           ),
     );
   }

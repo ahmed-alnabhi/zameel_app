@@ -33,34 +33,53 @@ class _JoinRequestsScreenState extends State<JoinRequestsScreen> {
     super.initState();
     fetchRequests();
   }
+Future<void> fetchRequests() async {
+  if (isLoading) return;
 
-  Future<void> fetchRequests() async {
-    if (isLoading) return;
+  setState(() {
+    isLoading = true;
+  });
 
-    setState(() {
-      isLoading = true;
-    });
+  List<dynamic> allRequests = [];
 
+  int currentPage = 1;
+  int lastPage = 1;
+
+  do {
     final result = await fetchJoinRequests(
       token: widget.token,
       groupId: widget.groupId,
+      page: currentPage, // تأكد أن دالة fetchJoinRequests تستقبل هذا البارامتر
     );
 
     if (result['success'] == true) {
       final List<dynamic> fetched = result['data'];
-      // فلترة الطلبات حسب status_id == 2 فقط
-      final filtered = fetched.where((req) => req['status_id'] == 2).toList();
-      setState(() {
-        requests = filtered.reversed.toList(); // الأحدث أولاً
-      });
+
+      // أضف رقم الصفحة لكل طلب
+      for (var req in fetched) {
+        req['page'] = currentPage;
+      }
+
+      allRequests.addAll(fetched);
+
+      // الحصول على قيمة last_page من meta
+      lastPage = result['meta']?['last_page'] ?? 1;
+      currentPage++;
     } else {
       print('حدث خطأ أثناء تحميل الطلبات: ${result['message']}');
+      break; // الخروج من اللوب عند حدوث خطأ
     }
+  } while (currentPage <= lastPage);
 
-    setState(() {
-      isLoading = false;
-    });
-  }
+  // فلترة الطلبات حسب status_id == 2 فقط
+  final filtered = allRequests.where((req) => req['status_id'] == 2).toList();
+
+  setState(() {
+    requests = filtered.reversed.toList(); // الأحدث أولاً
+    isLoading = false;
+  });
+}
+   
 
   @override
   void dispose() {
@@ -100,7 +119,7 @@ class _JoinRequestsScreenState extends State<JoinRequestsScreen> {
         body:
             isLoading
                 ? Center(child: CircularProgressIndicator())
-                : SafeArea(
+                : requests.isEmpty?Center(child: Text("لم يتم استقبال طلبات"),) :SafeArea(
                   child: RefreshIndicator(
                     onRefresh: fetchRequests,
                     child: ListView.builder(
@@ -355,7 +374,6 @@ class _JoinRequestsScreenState extends State<JoinRequestsScreen> {
                                                         Colors.green,
                                                       );
                                                     } else {
-                                                     
                                                       customSnackBar(
                                                         context,
                                                         " $responseحدث خطأ أثناء اضافة العضو",

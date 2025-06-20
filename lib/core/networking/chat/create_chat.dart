@@ -3,7 +3,10 @@ import 'package:zameel/core/networking/constant.dart';
 
 Dio dio = Dio();
 
-Future<Map<String, dynamic>> createChat({required String? token}) async {
+Future<Map<String, dynamic>> createChat({
+  required String? token,
+  required List<int> books, // أو List<String> حسب نوع المعرفات
+}) async {
   try {
     final response = await dio.post(
       '$baseUrl/chat/create',
@@ -14,6 +17,9 @@ Future<Map<String, dynamic>> createChat({required String? token}) async {
           'Authorization': 'Bearer $token',
         },
       ),
+      data: {
+        'books': books, // إرسال المصفوفة هنا
+      },
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -36,7 +42,7 @@ Future<Map<String, dynamic>> createChat({required String? token}) async {
 
     return {
       'success': false,
-      'message': e.response?.data['message'],
+      'message': e.response?.data['message'] ?? e.message,
       'statusCode': e.response?.statusCode,
     };
   } catch (e) {

@@ -9,13 +9,14 @@ class CustomButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
   final bool isEnabled;
-
+  final Color backgroundColor;
   const CustomButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.isEnabled = true,
     this.isLoading = false,
+    this.backgroundColor = AppColors.primaryColor,
   });
 
   @override
@@ -28,7 +29,7 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor:
               isEnabled
-                  ? AppColors.primaryColor
+                  ? backgroundColor
                   : AppColors.primaryColor.withValues(alpha: 0.7),  
           padding: EdgeInsets.symmetric(vertical: 16.h),
           shape: RoundedRectangleBorder(

@@ -180,7 +180,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       .where((word) => word.isNotEmpty)
                                       .toList();
 
-                              if (words.length != 4) {
+                              if (words.length != 4 ) {
                                 return 'يرجى إدخال اسم رباعي صحيح';
                               }
                               return null;

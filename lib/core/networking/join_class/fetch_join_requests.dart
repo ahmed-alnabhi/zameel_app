@@ -6,10 +6,14 @@ Dio dio = Dio();
 Future<Map<String, dynamic>> fetchJoinRequests({
   required String token,
   required int groupId,
+  int page = 1,
 }) async {
   try {
     final response = await dio.get(
       '$baseUrl/groups/$groupId/applies',
+      queryParameters: {
+        'page': page,
+      },
       options: Options(
         headers: {
           'Content-Type': 'application/json',

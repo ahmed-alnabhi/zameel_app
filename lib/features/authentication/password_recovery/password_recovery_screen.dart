@@ -99,7 +99,7 @@ class _PasswordRecoveryfeaturestate extends State<PasswordRecoveryScreen> {
                           ),
                           SizedBox(height: 60.h),
                           Text(
-                            "أهلا وسهلاً",
+                            "استعادة كلمة المرور",
                             style: Theme.of(context).textTheme.displayLarge,
                           ),
                           SizedBox(height: 40.h),

@@ -3,17 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/networking/join_class/fetch_majors_groups.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
-import 'package:zameel/features/join_class/request_join_class_screen.dart';
+import 'package:zameel/features/home/profile/request_join_again/request_join_class_again_screen.dart';
 
-class JoinClassScreen extends StatefulWidget {
+class JoinClassAgainScreen extends StatefulWidget {
   final String token;
-  const JoinClassScreen({super.key, required this.token});
+  const JoinClassAgainScreen({super.key, required this.token});
 
   @override
-  State<JoinClassScreen> createState() => _JoinClassScreenState();
+  State<JoinClassAgainScreen> createState() => _JoinClassAgainScreenState();
 }
 
-class _JoinClassScreenState extends State<JoinClassScreen> {
+class _JoinClassAgainScreenState extends State<JoinClassAgainScreen> {
   bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (context) => RequestJoinClassScreen(majorsData:result['data'] , token:  widget.token,),
+                                        (context) => RequestJoinClassAgainScreen(majorsData:result['data'] , token:  widget.token,),
                                   ),
                                 );
                               } else {

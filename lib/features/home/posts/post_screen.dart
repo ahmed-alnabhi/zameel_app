@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:zameel/core/functions/remove_ext.dart';
+import 'package:zameel/core/networking/constant.dart';
 import 'package:zameel/core/networking/fetch_posts_service.dart';
 import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
@@ -33,6 +36,7 @@ class _PostsScreenState extends State<PostsScreen> {
   bool hasMore = true;
   String? lastCursor;
   int? roll;
+  double? _progress;
   @override
   void initState() {
     super.initState();
@@ -107,6 +111,7 @@ class _PostsScreenState extends State<PostsScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       customSnackBar(context, "$e", Colors.red);
       setState(() {
         erorOccurred = true;
@@ -141,6 +146,7 @@ class _PostsScreenState extends State<PostsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         scrolledUnderElevation: 0,
         elevation: 0,
         title: Column(
@@ -243,9 +249,49 @@ class _PostsScreenState extends State<PostsScreen> {
                                     ),
                                     child: Row(
                                       children: [
-                                        Image.asset(
-                                          "assets/images/avatar.png",
-                                          width: 40,
+                                        CircleAvatar(
+                                          backgroundColor:
+                                              Theme.of(
+                                                context,
+                                              ).scaffoldBackgroundColor,
+                                          child:
+                                              post.authorRollID == 4
+                                                  ? Icon(
+                                                    LucideIcons.userRoundPen,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.onPrimary,
+                                                    size: 24,
+                                                  )
+                                                  : post.authorRollID == 3
+                                                  ? Icon(
+                                                    LucideIcons.book,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.onPrimary,
+                                                    size: 24,
+                                                  )
+                                                  : post.authorRollID == 2
+                                                  ? Icon(
+                                                    LucideIcons.school,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.onPrimary,
+                                                    size: 24,
+                                                  )
+                                                  : post.authorRollID == 1
+                                                  ? Icon(
+                                                    LucideIcons.shieldUser,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimary
+                                                        .withValues(alpha: 0.9),
+                                                    size: 27,
+                                                  )
+                                                  : null,
                                         ),
                                         const SizedBox(width: 8),
                                         Column(
@@ -547,7 +593,9 @@ class _PostsScreenState extends State<PostsScreen> {
                                                       // اسم الملف
                                                       Expanded(
                                                         child: Text(
-                                                          file.name,
+                                                          removeFileExtension(
+                                                            file.name,
+                                                          ),
                                                           style:
                                                               const TextStyle(
                                                                 fontWeight:
@@ -572,7 +620,62 @@ class _PostsScreenState extends State<PostsScreen> {
                                                                       .black,
                                                           size: 20,
                                                         ),
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          FileDownloader.downloadFile(
+                                                            url:
+                                                                '$cloudeBaseUrl${file.urls[0]}',
+                                                            name: file.name,
+                                                            subPath:
+                                                                "/storage/emulated/0/Download/zameel",
+                                                            onProgress: (
+                                                              fileName,
+                                                              progress,
+                                                            ) {
+                                                              setState(() {
+                                                                _progress =
+                                                                    progress;
+                                                                print(
+                                                                  "Progress: $progress",
+                                                                );
+                                                              });
+                                                            },
+                                                            onDownloadCompleted: (
+                                                              value,
+                                                            ) {
+                                                                    setState(() {
+                                                                _progress =
+                                                                    null;
+                                                              });
+                                                                 customSnackBar(
+                                                                context,
+                                                                "تم تحميل الملف بنجاح",
+                                                                Colors.green,
+                                                              );
+                                                              print(
+                                                                "Download completed: $value",
+                                                              );
+                                                              setState(() {
+                                                                _progress =
+                                                                    null;
+                                                              });
+                                                            },
+
+                                                            onDownloadError: (
+                                                              error,
+                                                            ) {
+                                                              setState(() {
+                                                                _progress =
+                                                                    null;
+                                                              });
+                                                              customSnackBar(
+                                                                context,
+                                                                "حدث خطأ أثناء تحميل الملف",
+
+                                                                Colors.red,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
                                                       ),
                                                       SizedBox(width: 5),
                                                     ],
@@ -598,7 +701,7 @@ class _PostsScreenState extends State<PostsScreen> {
                     MaterialPageRoute(builder: (context) => PublishPost()),
                   );
                 },
-                child: Icon(LucideIcons.plus),
+                child: Icon(LucideIcons.plus, color: Colors.white),
               )
               : null,
     );

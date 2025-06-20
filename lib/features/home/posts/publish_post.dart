@@ -5,7 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zameel/core/networking/posts_services/send_post_with_Images.dart';
+import 'package:zameel/core/networking/posts_services/send_post_with_images.dart';
 import 'package:zameel/core/networking/posts_services/send_post_with_file.dart';
 import 'package:zameel/core/networking/resources_services/fetch_student_groups.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
@@ -28,7 +28,12 @@ class _PublishPostState extends State<PublishPost> {
   Future<void> _pickAndCropImages() async {
     if (_selectedFile != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("❌ لا يمكنك اختيار صور إذا كان هناك ملف مرفق" , style: TextStyle(fontSize: 14))),
+        SnackBar(
+          content: Text(
+            "❌ لا يمكنك اختيار صور إذا كان هناك ملف مرفق",
+            style: TextStyle(fontSize: 14),
+          ),
+        ),
       );
       return;
     }
@@ -62,7 +67,10 @@ class _PublishPostState extends State<PublishPost> {
     if (_imageFiles.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("❌ لا يمكنك اختيار ملف إذا كانت هناك صور مضافة" , style: TextStyle(fontSize: 14),),
+          content: Text(
+            "❌ لا يمكنك اختيار ملف إذا كانت هناك صور مضافة",
+            style: TextStyle(fontSize: 14),
+          ),
         ),
       );
       return;
@@ -86,67 +94,77 @@ class _PublishPostState extends State<PublishPost> {
     final content = _contentController.text.trim();
 
     if (content.isEmpty && _imageFiles.isEmpty && _selectedFile == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("لا يمكن نشر منشور فارغ" , style: TextStyle(fontSize: 14),)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "لا يمكن نشر منشور فارغ",
+            style: TextStyle(fontSize: 14),
+          ),
+        ),
+      );
       return;
     }
     final result = await fetchStudentGroups(token: token);
     if (result['success']) {
-      
       groupIds = await result['data'];
-       showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Center(child: CircularProgressIndicator()),
-    );
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Center(child: CircularProgressIndicator()),
+      );
 
-    try {
-      if (_selectedFile != null) {
-        final resultPostFile = await sendPostWithFile(
-          token: token!,
-          taggableId: groupIds.first,
-          file: File(_selectedFile!.path),
-          content: content,
-        );
+      try {
+        if (_selectedFile != null) {
+          final resultPostFile = await sendPostWithFile(
+            token: token!,
+            taggableId: groupIds.first,
+            file: File(_selectedFile!.path),
+            content: content,
+          );
 
-        Navigator.pop(context);
-        if (resultPostFile['success']) {
-          customSnackBar(context, resultPostFile['message'], Colors.green);
+          Navigator.pop(context);
+          if (resultPostFile['success']) {
+            customSnackBar(
+              context,
+              "${resultPostFile['message']} ",
+              Colors.green,
+            );
+            Navigator.pop(context);
+          } else {
+            customSnackBar(context, resultPostFile['message'], Colors.red);
+          }
         } else {
-          customSnackBar(context, resultPostFile['message'], Colors.red);
+          final resultPostImages = await sendPostWithImages(
+            token: token!,
+            taggableId: groupIds.first,
+            files: _imageFiles.map((e) => File(e.path)).toList(),
+            content: content,
+          );
+          Navigator.pop(context);
+          if (resultPostImages['success']) {
+            customSnackBar(context, resultPostImages['message'], Colors.green);
+            Navigator.pop(context);
+          } else {
+            customSnackBar(context, resultPostImages['message'], Colors.red);
+            Navigator.pop(context);
+          }
         }
-      } else {
-        final resultPostImages = await sendPostWithImages(
-          token: token!,
-          taggableId: groupIds.first,
-          files: _imageFiles.map((e) => File(e.path)).toList(),
-          content: content,
-        );
+
+        setState(() {
+          _imageFiles.clear();
+          _selectedFile = null;
+          _contentController.clear();
+        });
+      } catch (e) {
         Navigator.pop(context);
-        if (resultPostImages['success']) {
-          customSnackBar(context, resultPostImages['message'], Colors.green);
-        } else {
-          customSnackBar(context, resultPostImages['message'], Colors.red);
-        }
+
+        customSnackBar(context, "تعذر الارسال $e $groupIds", Colors.red);
+        print(e);
       }
-
-      setState(() {
-        _imageFiles.clear();
-        _selectedFile = null;
-        _contentController.clear();
-      });
-    } catch (e) {
-      Navigator.pop(context);
-      
-      customSnackBar(context, "تعذر الارسال $e $groupIds", Colors.red);
-    }
-
     } else {
       customSnackBar(context, "حدث خطأ", Colors.red);
       return;
     }
-   
   }
 
   @override
@@ -266,7 +284,9 @@ class _PublishPostState extends State<PublishPost> {
                         child: Text(
                           _selectedFile!.name,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                       IconButton(

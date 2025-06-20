@@ -10,8 +10,8 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> customSnackBar(
       padding: EdgeInsets.all(10),
       content: Text(
         message,
-        style: const TextStyle(
-          color: Color.fromARGB(255, 0, 0, 0),
+        style:  TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
           fontSize: 12,
         ),
       ),

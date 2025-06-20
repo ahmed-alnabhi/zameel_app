@@ -1,32 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:zameel/core/networking/constant.dart';
 
-
-
 final Dio _dio = Dio();
-Future<Map<String, dynamic>> fetchAssignmentsService({
-  required String? token,
-  required String? cursor,
-  bool? before,
-}) async {
-  
+Future<Map<String, dynamic>> fetchUserInfo({required String? token}) async {
   try {
     final response = await _dio.get(
-      '$baseUrl/assignments',
-      queryParameters: {'cursor': cursor, 'before': before},
-      options: Options(headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token'}),
+      '$baseUrl/users/me',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = response.data;
-      return {
-        'success': true,
-        'data': data['data'],
-        'statusCode': response.statusCode,
-      };
+      return {'success': true, 'data': data, 'statusCode': response.statusCode};
     } else {
       return {
         'success': false,
@@ -48,4 +39,3 @@ Future<Map<String, dynamic>> fetchAssignmentsService({
     };
   }
 }
-

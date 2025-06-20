@@ -11,7 +11,7 @@ import 'package:zameel/core/widget/custom_arrow_back.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
-import 'package:zameel/features/home/home_screen.dart';
+import 'package:zameel/features/join_class/join_class_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String token;
@@ -75,7 +75,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
 
       if (resultOfVerifyEmail['success']) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token',widget.token);
+        prefs.setString('token', widget.token);
         setState(() {
           _isvalid = true;
           _isUnvalid = false;
@@ -85,7 +85,7 @@ class _OtpVerificationfeaturestate extends State<OtpVerificationScreen> {
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => JoinClassScreen(token: widget.token,)),
           );
         });
       } else {

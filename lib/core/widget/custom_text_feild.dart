@@ -13,7 +13,8 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final double contentHeight;
-
+  final dynamic onTap;
+  final bool readOnly;
   const CustomTextField({
     super.key,
     required this.hintText,
@@ -23,7 +24,9 @@ class CustomTextField extends StatefulWidget {
     this.isEnabled = true,
     this.hasPrefix = false,
     this.prefixIcon,
+    this.onTap,
     this.contentHeight = 19,
+    this.readOnly = false,
   });
 
   @override
@@ -36,6 +39,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: widget.readOnly,
+      onTap: widget.onTap,
       enabled: widget.isEnabled,
       cursorColor: AppColors.primaryColor,
       controller: widget.controller,
@@ -48,7 +53,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         color: Theme.of(context).colorScheme.onPrimary,
       ),
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: widget.contentHeight),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: widget.contentHeight,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide(color: AppColors.primaryColor),

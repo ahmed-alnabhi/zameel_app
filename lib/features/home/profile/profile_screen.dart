@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zameel/core/networking/profile/fetch_user_info.dart';
 import 'package:zameel/core/networking/resources_services/fetch_student_groups.dart';
+import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
+import 'package:zameel/features/authentication/login_screen.dart';
+import 'package:zameel/features/authentication/password_recovery/password_recovery_screen.dart';
+import 'package:zameel/features/home/profile/change_theme.dart';
+import 'package:zameel/features/home/profile/join_requests_screen.dart';
+import 'package:zameel/features/home/profile/request_join_again/join_class_again_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? email;
   String? name;
   String? groupName;
+  int? groupId;
   bool isLoading = false;
   bool hasErorr = false;
   Future<void> _getInformationFromSheredPrefs() async {
@@ -31,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (result['success']) {
         setState(() {
           groupName = result['groupNames'].first ?? '';
+          groupId = result['data'].first;
         });
       }
     }
@@ -112,60 +120,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 10),
               if (roll == 5)
-                Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_back_ios,
-                      size: 16,
-                      color: Theme.of(
+                InkWell(
+                  onTap: () {
+                    if (token != null) {
+                      Navigator.push(
                         context,
-                      ).colorScheme.onPrimary.withValues(alpha: 0.7),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      "طلب انضمام لدفعة",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => JoinClassAgainScreen(token: token!),
+                        ),
+                      );
+                    } else {
+                      customSnackBar(
+                        context,
+                        "لا يمكنك الانضمام لدفعة حاليا",
+                        Colors.red,
+                      );
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        "طلب انضمام لدفعة",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 5),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary.withValues(alpha: 0.7),
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (roll == 4)
+                InkWell(
+                  onTap: () {
+                    if (token != null && groupId != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => JoinRequestsScreen(
+                                token: token!,
+                                groupId: groupId!,
+                              ),
+                        ),
+                      );
+                    } else {
+                      customSnackBar(
+                        context,
+                        "لا يمكنك رؤية طلبات الانضمام حاليا",
+                        Colors.red,
+                      );
+                    }
+                  },
+
+                  child: Row(
+                    children: [
+                      Text(
+                        "طلبات الانضمام",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary.withValues(alpha: 0.7),
+                      ),
+                    ],
+                  ),
                 ),
               if (roll == 4) SizedBox(height: 15),
               if (roll == 4)
                 Row(
                   children: [
-                    Icon(
-                      Icons.arrow_back_ios,
-                      size: 16,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onPrimary.withValues(alpha: 0.7),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      "طلبات الانضمام",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              if (roll == 4) SizedBox(height: 15),
-              if (roll == 4)
-                Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_back_ios,
-                      size: 16,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onPrimary.withValues(alpha: 0.7),
-                    ),
-                    SizedBox(width: 10),
                     Text(
                       "الأعضاء",
                       style: TextStyle(
@@ -173,6 +215,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
+                    ),
+                    SizedBox(width: 5),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onPrimary.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -183,12 +233,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ).colorScheme.onPrimary.withValues(alpha: 0.2),
               ),
               SizedBox(height: 10),
-              Text(
-                "تغيير الوضع",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
+              InkWell(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                    ),
+                    builder: (_) => const ThemeSelectorSheet(),
+                  );
+                },
+                child: Text(
+                  "تغيير الوضع",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: AppFonts.mainFontName,
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -212,20 +277,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context,
                 ).colorScheme.onPrimary.withValues(alpha: 0.2),
               ),
-              SizedBox(height: 10),
-              Text(
-                "تغيير كلمة السر",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
+
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PasswordRecoveryScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "تغيير كلمة السر",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: AppFonts.mainFontName,
+                  ),
                 ),
               ),
-              SizedBox(width: 10),
-              SizedBox(height: 20),
-              SizedBox(width: 8),
+
               TextButton(
-                onPressed: () async {},
+                onPressed: () async {
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  await prefs.clear();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
                 child: Text(
                   "تسجيل الخروج",
                   style: TextStyle(
@@ -236,7 +318,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-
+              DropdownButtonFormField(
+                        style: TextStyle(
+                          fontFamily: AppFonts.mainFontName,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'المجموعة',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                          errorStyle: TextStyle(
+                            fontFamily: AppFonts.mainFontName,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          filled: true,
+                          fillColor:
+                              Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer,
+                          hintText: 'المجموعة',
+                          hintStyle: Theme.of(context).textTheme.displayMedium,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                     
+                   items: [],
+                   onChanged: (value) {},
+                        
+                      ),
               Expanded(child: SizedBox()),
               SizedBox(height: 20),
               Row(

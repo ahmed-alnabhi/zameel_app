@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:zameel/core/networking/join_class/send_join_request.dart';
 import 'package:zameel/core/widget/custom_button.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
+import 'package:zameel/features/home/home_screen.dart';
 import 'package:zameel/features/home/profile/profile_screen.dart';
 import 'package:zameel/features/join_class/custom_dropdown_feild.dart';
 
@@ -207,7 +208,7 @@ class _RequestJoinClassAgainScreenState
                                     Colors.green,
                                   );
                                   
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
                                 } else {
                                   setState(() {
                                     isLoading = false;

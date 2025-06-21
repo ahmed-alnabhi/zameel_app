@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:zameel/core/functions/days_left_or_date.dart';
 import 'package:zameel/core/functions/format_time_ago.dart';
+import 'package:zameel/core/networking/assignments/delete_assignment.dart';
 import 'package:zameel/core/networking/assignments/fetch_all_assignments.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zameel/core/networking/assignments/fetch_subject_by_group.dart';
+import 'package:zameel/core/networking/assignments/fetch_teacher_groups_subjects.dart';
+import 'package:zameel/core/networking/resources_services/fetch_student_groups.dart';
+import 'package:zameel/core/theme/app_colors.dart';
+import 'package:zameel/core/theme/app_fonts.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/features/home/assignments/assignment_details_screen.dart';
 import 'package:zameel/features/home/assignments/assignment_teacher.dart';
+import 'package:zameel/features/home/assignments/dialog_for_create_assignment_represnter_pov.dart';
+import 'package:zameel/features/home/assignments/dialog_for_create_assignment_teacher_pov.dart';
 
 class AssignmentsScreen extends StatefulWidget {
   const AssignmentsScreen({super.key});
@@ -22,18 +31,19 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
   String? lastCursor;
   final int pageSize = 12;
   int? roll;
-  String? token;  
- 
-Future<void> getRollID() async {
+  String? token;
+
+  Future<void> getRollID() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     roll = prefs.getInt('roll');
   }
+
   @override
   void initState() {
     super.initState();
- 
+
     getRollID();
-   
+
     _fetchAssignments();
 
     _scrollController.addListener(() {
@@ -60,7 +70,7 @@ Future<void> getRollID() async {
     });
 
     final prefs = await SharedPreferences.getInstance();
-     token = prefs.getString('token');
+    token = prefs.getString('token');
 
     try {
       final result = await fetchAssignmentsService(
@@ -202,35 +212,88 @@ Future<void> getRollID() async {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-           if(roll == 3 || roll == 5)  IconButton(
-                icon: Icon(LucideIcons.trash, color: Colors.red, size: 24),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('حذف الواجب'),
-                        content: Text('هل أنت متأكد من رغبتك في حذف هذا الواجب؟'),
-                        actions: [
-                          TextButton(
-                            child: Text('إلغاء'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+              if (roll == 3 || roll == 4)
+                IconButton(
+                  icon: Icon(LucideIcons.trash, color: Colors.red, size: 24),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: AlertDialog(
+                            title: Text(
+                              'حذف الواجب',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontFamily: AppFonts.mainFontName,
+                                fontSize: 18,
+                              ),
+                            ),
+                            content: Text(
+                              'هل أنت متأكد من رغبتك في حذف هذا التكليف',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontFamily: AppFonts.mainFontName,
+                                fontSize: 16,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text(
+                                  'إلغاء',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    fontFamily: AppFonts.mainFontName,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text(
+                                  'حذف',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontFamily: AppFonts.mainFontName,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final resultOfDelete =
+                                      await deleteAssignmentService(
+                                        token: token,
+                                        assignmentID: assignment['id'],
+                                      );
+                                  if (resultOfDelete['success']) {
+                                    customSnackBar(
+                                      context,
+                                      "تم الحذف ببنجاح",
+                                      Colors.green,
+                                    );
+                                    Navigator.pop(context);
+                                  } else {
+                                    customSnackBar(
+                                      context,
+                                      "${resultOfDelete['message']}",
+                                      Colors.red,
+                                    );
+                                    print(token);
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            child: Text('حذف'),
-                            onPressed: () {
-                            //  deleteAssignment(assignment['id']);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
+                        );
+                      },
+                    );
+                  },
+                ),
               IconButton(
                 icon: Icon(
                   Icons.arrow_forward_ios,
@@ -242,7 +305,14 @@ Future<void> getRollID() async {
                     MaterialPageRoute(
                       builder:
                           (context) =>
-                            (roll == 4 || roll == 5)? AssignmentDetailsScreen(assignment: assignment) : AssignmentTeacher(assignment: assignment , token: token!,) ,
+                              (roll == 4 || roll == 5)
+                                  ? AssignmentDetailsScreen(
+                                    assignment: assignment,
+                                  )
+                                  : AssignmentTeacher(
+                                    assignment: assignment,
+                                    token: token!,
+                                  ),
                     ),
                   );
                 },
@@ -299,15 +369,61 @@ Future<void> getRollID() async {
                     ),
           ),
         ),
-        floatingActionButton: (roll == 3 || roll == 4)
-            ? FloatingActionButton(
-                heroTag: UniqueKey().toString(),
-                onPressed: () {
-                  // Add your onPressed logic here
-                },
-                child: const Icon(LucideIcons.plus),
-              )
-            : null,
+        floatingActionButton:
+            (roll == 3 || roll == 4)
+                ? FloatingActionButton(
+                  heroTag: UniqueKey().toString(),
+                  onPressed: () async {
+                    if (token != null && roll == 3) {
+                      // ✅ إظهار دائرة التحميل
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder:
+                            (_) => Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                      );
+                      final result = await fetchGroupNamesAndSubjectIds(token!);
+                      Navigator.of(context, rootNavigator: true).pop();
+
+                      if (result.isNotEmpty && token != null) {
+                        showAssignmentFormDialog(
+                          context: context,
+                          groups: result,
+                          token: token!,
+                        );
+                      }
+                    } else if (roll == 4) {
+                      final resultGroup = await fetchStudentGroups(
+                        token: token!,
+                      );
+                      if (resultGroup['success']) {
+                        final groupId = resultGroup['data'].first;
+                        final resultSubject = await fetchSubjectsByGroup(
+                          groupId: groupId,
+                          token: token!,
+                        );
+                        if (resultSubject.isNotEmpty) {
+                          showDialogForCreateAssignmentRepresnterPov(
+                            context: context,
+                            token: token!,
+                            groups: resultSubject,
+                            
+                          );
+                        }
+                      }
+
+                      // print(result);
+                    }
+                  },
+                  child: const Icon(LucideIcons.plus, color: Colors.white),
+                )
+                : null,
       ),
     );
   }

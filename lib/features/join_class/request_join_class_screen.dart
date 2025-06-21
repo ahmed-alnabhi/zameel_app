@@ -29,9 +29,9 @@ class _RequestJoinClassScreenState extends State<RequestJoinClassScreen> {
 
   /// خريطة معرفات الكليات إلى أسمائها
   final Map<int, String> collegeNames = {
-    1: "الطب",
-    2: "الهندسة",
-    3: "العلوم",
+    1: "كلية الطب",
+    2: "كلية الهندسة والحاسبات",
+    3: "كلية العلوم الادارية والانسانسة",
     4: "التربية",
   };
 

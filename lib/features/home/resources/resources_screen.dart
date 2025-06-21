@@ -301,7 +301,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                                               color:
                                                   Theme.of(
                                                     context,
-                                                  ).colorScheme.error,
+                                                  ).colorScheme.onPrimary,
                                               fontSize: 16,
                                             ),
                                           ),

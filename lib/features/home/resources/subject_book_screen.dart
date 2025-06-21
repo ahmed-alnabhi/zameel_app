@@ -55,9 +55,10 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
   Future<void> _fetchSubjectBooks() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    final groupId = prefs.getInt('selectedGroupId');
+  // final groupId = prefs.getInt('selectedGroupId');
+  print(widget.groupId);
+    final result = await fetchAllBooks(token: token, groupId: widget.groupId);
 
-    final result = await fetchAllBooks(token: token, groupId: groupId);
     if (result['success']) {
       final response = result['data'] as Response;
       final allBooks = response.data['data'] as List;
@@ -70,6 +71,7 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
       setState(() => isLoading = false);
     } else {
       setState(() => isLoading = false);
+      print(result);
     }
   }
 
@@ -427,7 +429,7 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                   isUpLoading = false;
                                 });
                                 Navigator.pop(context);
-                              
+
                                 _fetchSubjectBooks(); // تحديث قائمة الكتب بعد الرفع
                               },
                               child: Text(

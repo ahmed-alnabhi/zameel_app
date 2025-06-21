@@ -8,44 +8,29 @@ import 'package:zameel/features/authentication/login_screen.dart';
 void main() {
   runApp(const MyApp());
 }
+ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  ThemeMode currentTheme = ThemeMode.system;
-
-  dynamic changeTheme() {
-    return () {
-      setState(() {
-        if (currentTheme == ThemeMode.light) {
-          currentTheme = ThemeMode.dark;
-        } else {
-          currentTheme = ThemeMode.light;
-        }
-      });
-    };
-  }
-
-  // This widget is the root of your application.
-  @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(430, 932),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder:
-          (context, child) => MaterialApp(
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, currentTheme, _) {
+        return ScreenUtilInit(
+          designSize: const Size(430, 932),
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) => MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: currentTheme,
-            theme:   lightTheme ,
-            darkTheme:  darkTheme,
-            home:  LoginScreen()
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            home: const LoginScreen(),
           ),
+        );
+      },
     );
   }
 }

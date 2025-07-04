@@ -75,8 +75,8 @@ class _SignUpPageState extends State<SignUpPage> {
     final result = await registerUser(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      password: _passwordController.text,
-      confirmPassword: _confirmPasswordController.text,
+      password: _passwordController.text.trim(),
+      confirmPassword: _confirmPasswordController.text.trim(),
       deviceName: deviceName,
     );
     if (result['success']) {

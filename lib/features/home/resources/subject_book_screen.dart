@@ -2,14 +2,17 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:zameel/core/functions/get_color_by_ext.dart';
+import 'package:zameel/core/networking/constant.dart';
 import 'package:zameel/core/networking/resources_services/fetch_all_books.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:zameel/core/networking/resources_services/upload_books_service.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
+import 'package:zameel/core/widget/custom_snack_bar.dart';
 
 class SubjectBooksScreen extends StatefulWidget {
   final int subjectId;
@@ -34,6 +37,7 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
   List books = [];
   String? fileExt;
   int? roll;
+  double? _progress;
 
   Future<void> getRoll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,8 +59,8 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
   Future<void> _fetchSubjectBooks() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-  // final groupId = prefs.getInt('selectedGroupId');
-  print(widget.groupId);
+    // final groupId = prefs.getInt('selectedGroupId');
+    print(widget.groupId);
     final result = await fetchAllBooks(token: token, groupId: widget.groupId);
 
     if (result['success']) {
@@ -232,7 +236,50 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                                           size: 20,
                                         ),
                                         onPressed: () {
-                                          print(books[index]['id']);
+                                          // print(books[index]['path']);
+                                          // print(widget.subjectName);
+
+                                          FileDownloader.downloadFile(
+                                            url:
+                                                '$cloudeBaseUrl${books[index]['path']}',
+                                            name: books[index]['name'],
+                                            subPath:
+                                                "zameel/${widget.subjectName}",
+                                            onProgress: (fileName, progress) {
+                                              setState(() {
+                                                _progress = progress;
+                                                print("Progress: $progress");
+                                              });
+                                            },
+                                            onDownloadCompleted: (value) {
+                                              setState(() {
+                                                _progress = null;
+                                              });
+                                              customSnackBar(
+                                                context,
+                                                "تم تحميل الملف بنجاح",
+                                                Colors.green,
+                                              );
+                                              print(
+                                                "Download completed: $value",
+                                              );
+                                              setState(() {
+                                                _progress = null;
+                                              });
+                                            },
+
+                                            onDownloadError: (error) {
+                                              setState(() {
+                                                _progress = null;
+                                              });
+                                              customSnackBar(
+                                                context,
+                                                "حدث خطأ أثناء تحميل الملف",
+
+                                                Colors.red,
+                                              );
+                                            },
+                                          );
                                         },
                                       ),
                                       SizedBox(width: 5),
@@ -295,6 +342,11 @@ class _SubjectBooksScreenState extends State<SubjectBooksScreen> {
                     child: Column(
                       children: [
                         TextField(
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: AppFonts.mainFontName,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                           onChanged: (value) => bookName = value,
                           decoration: InputDecoration(
                             labelText: 'اسم الملزمة',

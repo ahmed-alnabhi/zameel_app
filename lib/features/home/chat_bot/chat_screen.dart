@@ -15,6 +15,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'dart:convert';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
 
+// ... (نفس الاستيرادات بدون تغيير)
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -32,6 +34,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final Map<String, Message> _messageById = {};
   List<int> books = [];
 
+  bool isWaitingResponse = false;
+
   @override
   void initState() {
     super.initState();
@@ -41,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _initPusher() async {
     token = await getToken();
     final resultUserGroup = await fetchStudentGroups(token: token!);
-    List<int>  groupIds = resultUserGroup['data'];
+    List<int> groupIds = resultUserGroup['data'];
     if (groupIds.isNotEmpty) {
       final resultoffetchAllUserBooks = await fetchAllBooks(
         token: token!,
@@ -63,18 +67,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
       await _pusher.init(apiKey: "2e6578229e9dbd0a0625", cluster: 'eu');
 
-      _pusher.onError = (message, code, exception) {
-     
-      };
-
       await _pusher.subscribe(channelName: 'chat.$chatId');
 
       _pusher.onEvent = (PusherEvent event) {
         final data = jsonDecode(event.data ?? '{}');
-        print(data);
-        if (data['id'] != null &&
-            data['sequence'] != null &&
-            data['message'] != null) {
+        if (data['id'] != null && data['sequence'] != null && data['message'] != null) {
           final String id = data['id'];
           final String part = data['message'];
 
@@ -87,12 +84,9 @@ class _ChatScreenState extends State<ChatScreen> {
               _messageById[id] = newMsg;
               messages.add(newMsg);
             }
+            isWaitingResponse = false;
           });
         }
-      };
-
-      _pusher.onConnectionStateChange = (currentState, previousState) {
-        print('Pusher state changed from $previousState to $currentState');
       };
 
       await _pusher.connect();
@@ -103,6 +97,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage(String messageText) async {
     final dio = Dio();
+    setState(() {
+      isWaitingResponse = true;
+      messages.add(Message(id: '', text: messageText, isMe: true));
+    });
 
     try {
       final response = await dio.post(
@@ -116,17 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         ),
       );
-      print("Response: ${response.data}");
-      print(chatId);
-      if (response.statusCode == 200 ||
-          response.statusCode == 201 ||
-          response.statusCode == 202) {
-        setState(() {
-          messages.add(Message(id: '', text: messageText, isMe: true));
-        });
-      }
     } catch (e) {
       customSnackBar(context, "تعذر ارسال الرسالة: $e", Colors.red);
+      setState(() => isWaitingResponse = false);
     }
   }
 
@@ -140,7 +130,6 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           centerTitle: true,
           toolbarHeight: 60,
-          scrolledUnderElevation: 0,
           elevation: 0,
           title: Column(
             children: [
@@ -149,10 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
           leading: IconButton(
-            icon: Icon(
-              LucideIcons.arrowRight,
-              color: Theme.of(context).iconTheme.color,
-            ),
+            icon: Icon(LucideIcons.arrowRight, color: Theme.of(context).iconTheme.color),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -163,54 +149,42 @@ class _ChatScreenState extends State<ChatScreen> {
               Expanded(
                 child: ListView.builder(
                   reverse: true,
-                  itemCount: messages.length,
+                  itemCount: messages.length + (isWaitingResponse ? 1 : 0),
                   itemBuilder: (context, index) {
-                    final message = messages[messages.length - 1 - index];
-                    return Align(
-                      alignment:
-                          message.isMe
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 14,
+                    if (isWaitingResponse && index == 0) {
+                      return Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
                         ),
-                        margin:
-                            message.isMe
-                                ? const EdgeInsets.only(
-                                  top: 5,
-                                  right: 10,
-                                  bottom: 5,
-                                )
-                                : const EdgeInsets.only(
-                                  top: 5,
-                                  left: 10,
-                                  bottom: 5,
-                                ),
+                      );
+                    }
+
+                    final message = messages[messages.length - 1 - (index - (isWaitingResponse ? 1 : 0))];
+                    return Align(
+                      alignment: message.isMe ? Alignment.centerLeft : Alignment.centerRight,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                        margin: message.isMe
+                            ? const EdgeInsets.only(top: 5, right: 10, bottom: 5)
+                            : const EdgeInsets.only(top: 5, left: 10, bottom: 5),
                         decoration: BoxDecoration(
-                          color:
-                              message.isMe
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondaryContainer
-                                  : Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondaryContainer,
+                          color: message.isMe
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSecondaryContainer,
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(12),
                             topRight: const Radius.circular(12),
-                            bottomLeft:
-                                message.isMe
-                                    ? const Radius.circular(0)
-                                    : const Radius.circular(12),
-                            bottomRight:
-                                message.isMe
-                                    ? const Radius.circular(12)
-                                    : const Radius.circular(0),
+                            bottomLeft: message.isMe ? const Radius.circular(0) : const Radius.circular(12),
+                            bottomRight: message.isMe ? const Radius.circular(12) : const Radius.circular(0),
                           ),
                         ),
                         child: Column(
@@ -222,82 +196,20 @@ class _ChatScreenState extends State<ChatScreen> {
                                 p: TextStyle(
                                   fontSize: 14,
                                   height: 1.8,
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
+                                  color: message.isMe ? Colors.white : Theme.of(context).colorScheme.onPrimary,
                                   fontFamily: AppFonts.mainFontName,
-                                ),
-                                h1: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: AppFonts.mainFontName,
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
-                                ),
-                                h2: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: AppFonts.mainFontName,
-                                  height: 1.5,
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
-                                ),
-                                h3: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: AppFonts.mainFontName,
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
-                                ),
-                                horizontalRuleDecoration: BoxDecoration(
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
-                                  border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                                ),
-                                listBullet: TextStyle(
-                                  color:
-                                      message.isMe
-                                          ? Colors.white
-                                          : Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
                                 ),
                               ),
                             ),
                             if (!message.isMe)
                               IconButton(
                                 padding: EdgeInsets.zero,
-                                onPressed: () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: message.text),
-                                  );
-                                },
+                                onPressed: () => Clipboard.setData(ClipboardData(text: message.text)),
                                 icon: Icon(
                                   LucideIcons.copy,
-                                  color: Theme.of(context).colorScheme.onPrimary
-                                      .withValues(alpha: 0.8),
+                                  color: Theme.of(context).colorScheme.onPrimary.withValues(
+                                    alpha: 0.8
+                                  ),
                                 ),
                               ),
                           ],
@@ -326,10 +238,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           fontSize: 14,
                         ),
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 15,
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
                           hintText: "اكتب رسالتك",
                           hintStyle: TextStyle(
                             fontSize: 14,

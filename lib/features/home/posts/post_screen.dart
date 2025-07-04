@@ -626,7 +626,7 @@ class _PostsScreenState extends State<PostsScreen> {
                                                                 '$cloudeBaseUrl${file.urls[0]}',
                                                             name: file.name,
                                                             subPath:
-                                                                "/storage/emulated/0/Download/zameel",
+                                                                "zameel/posts",
                                                             onProgress: (
                                                               fileName,
                                                               progress,

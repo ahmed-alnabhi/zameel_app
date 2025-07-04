@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:zameel/core/functions/days_left_or_date.dart';
@@ -390,7 +392,6 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                       );
                       final result = await fetchGroupNamesAndSubjectIds(token!);
                       Navigator.of(context, rootNavigator: true).pop();
-
                       if (result.isNotEmpty && token != null) {
                         showAssignmentFormDialog(
                           context: context,
@@ -399,6 +400,18 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                         );
                       }
                     } else if (roll == 4) {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder:
+                            (_) => Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primaryColor,
+                                ),
+                              ),
+                            ),
+                      );
                       final resultGroup = await fetchStudentGroups(
                         token: token!,
                       );
@@ -409,14 +422,22 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                           token: token!,
                         );
                         if (resultSubject.isNotEmpty) {
+                          Navigator.pop(context);
                           showDialogForCreateAssignmentRepresnterPov(
                             context: context,
                             token: token!,
-                            groups: resultSubject,
-                            
+                            groupId: groupId,
+                            subjects: resultSubject,
                           );
+                          // print(resultSubject);
+                        } else{
+                          Navigator.pop(context);
+                          customSnackBar(context, "حصل خطأ", Colors.red);
                         }
-                      }
+                      }else{
+                        Navigator.pop(context);
+                          customSnackBar(context, "حصل خطأ", Colors.red);
+                        }
 
                       // print(result);
                     }

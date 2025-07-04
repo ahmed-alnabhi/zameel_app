@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zameel/core/networking/resources_services/fetch_student_groups.dart';
-import 'package:zameel/core/theme/app_colors.dart';
 import 'package:zameel/core/theme/app_fonts.dart';
 import 'package:zameel/core/widget/custom_snack_bar.dart';
 import 'package:zameel/features/authentication/login_screen.dart';
@@ -37,8 +36,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final result = await fetchStudentGroups(token: token);
       if (result['success']) {
         setState(() {
-          groupName = result['groupNames'].first ?? '';
-          groupId = result['data'].first;
+          if (result['groupNames'].length > 0 &&
+              result['data'].length > 0) {
+            groupName = result['groupNames'].first ?? '';
+            groupId = result['data'].first ?? 0;
+          } else {
+            setState(() {
+              groupName = "";
+              groupId = 0;
+
+            });
+          }
         });
       }
     }
@@ -318,54 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              DropdownButtonFormField(
-                        style: TextStyle(
-                          fontFamily: AppFonts.mainFontName,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'المجموعة',
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                          errorStyle: TextStyle(
-                            fontFamily: AppFonts.mainFontName,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                          filled: true,
-                          fillColor:
-                              Theme.of(
-                                context,
-                              ).colorScheme.onSecondaryContainer,
-                          hintText: 'المجموعة',
-                          hintStyle: Theme.of(context).textTheme.displayMedium,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                     
-                   items: [],
-                   onChanged: (value) {},
-                        
-                      ),
+      
               Expanded(child: SizedBox()),
               SizedBox(height: 20),
               Row(
@@ -373,7 +334,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "طور بحب في: ",
+                    "طور بواسطة : ",
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
                       fontSize: 15,
